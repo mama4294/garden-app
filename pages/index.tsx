@@ -1,11 +1,10 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
-import Grid from "../components/Grid";
+import { Stage } from "../components/Stage";
 
 const Home: NextPage = () => {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center py-2">
+    <div className="flex h-screen flex-col items-center justify-center py-2">
       {/* For SEO */}
       <Head>
         <title>Garden App</title>
@@ -26,7 +25,7 @@ const Home: NextPage = () => {
         </p>
 
         <div className="flex-1 my-10 w-full h-full">
-          <Grid />
+          <Stage />
         </div>
       </main>
 
