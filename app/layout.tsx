@@ -1,4 +1,5 @@
 import { Footer } from "../components/Footer";
+import { Navbar } from "../components/Navbar";
 
 export const metadata = {
   title: "Gardening",
@@ -12,8 +13,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
-      <Footer />
+      <body className="h-screen flex flex-col">
+        <Navbar />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }

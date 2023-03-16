@@ -1,18 +1,15 @@
-import { Stage } from "../components/Stage";
 import "../styles/globals.css";
 
 function HomePage() {
   return (
-    <div className="h-screen text-center">
-      <div className="my-10">
+    <div className="h-full flex-1 text-center flex flex-col justify-center">
+      <div className="">
         <h1 className="text-6xl font-bold">
-          Welcome to <p className="text-primary inline-block">Gardening</p>
+          Garden <p className="text-primary inline-block">Designer</p>
         </h1>
-        <p className="mt-3 text-2xl">Map out your planters</p>
+        <p className="mt-3 text-2xl mb-10">Map out your planters</p>
+        <button className="btn btn-lg">Design New Planter</button>
       </div>
-      <button className="btn btn-lg bg-accent text-accent-content">
-        Design New Planter
-      </button>
     </div>
   );
 }
