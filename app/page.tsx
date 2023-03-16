@@ -1,5 +1,6 @@
 import "../styles/globals.css";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
+import { PlanterList } from "./PlanterList";
 
 function HomePage() {
   return (
@@ -9,10 +10,7 @@ function HomePage() {
           Garden <p className="text-primary inline-block">Designer</p>
         </h1>
         <p className="mt-3 text-2xl mb-10">Map out your planters</p>
-        <button className="btn btn-lg gap-2">
-          <PlusCircleIcon className="h-8 w-8" />
-          Design New Planter
-        </button>
+        <PlanterList />
       </div>
     </div>
   );
