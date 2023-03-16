@@ -1,3 +1,5 @@
+"use client";
+
 type Props = {
   label: string;
   value: number;
@@ -13,6 +15,24 @@ export const InputGroup = ({
   onChange,
   unit,
 }: Props) => {
+  return (
+    <div className="form-control">
+      <label className="label">
+        <span className="label-text">{label}</span>
+      </label>
+      <label className="input-group">
+        <input
+          type="text"
+          placeholder={placeholder}
+          className="input input-bordered"
+          value={value}
+          onChange={onChange}
+        />
+        <span>{unit}</span>
+      </label>
+    </div>
+  );
+
   return (
     <div>
       <label

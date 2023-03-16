@@ -1,3 +1,5 @@
+"use client";
+
 import { useReducer } from "react";
 import { InputGroup } from "./InputGroup";
 
@@ -39,7 +41,7 @@ export const Stage = () => {
 
   return (
     <div>
-      <div className="grid gap-6 mb-6 md:grid-cols-2 text-left text-sm font-medium text-gray-900 dark:text-white my-4">
+      <div className="grid gap-6 place-self-center mb-6 md:grid-cols-2 text-left text-sm font-medium text-gray-900 dark:text-white my-4">
         <InputGroup
           label="Planter Length"
           placeholder="10"
