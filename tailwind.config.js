@@ -9,4 +9,7 @@ module.exports = {
   theme: {
     extend: {},
   },
+  daisyui: {
+    themes: ["garden", "dark"],
+  },
 };
