@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const Navbar = () => {
   return (
     <div className="navbar bg-neutral text-neutral-content">
@@ -24,13 +26,13 @@ export const Navbar = () => {
             className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 text-base-content rounded-box w-52"
           >
             <li>
-              <a>Home</a>
+              <Link href="/">Home</Link>
             </li>
             <li>
-              <a>Planters</a>
+              <Link href="/planters">Planters</Link>
             </li>
             <li>
-              <a>About</a>
+              <Link href="/about">About</Link>
             </li>
           </ul>
         </div>
