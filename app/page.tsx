@@ -5,7 +5,7 @@ import { PlanterList } from "./planters/PlanterList";
 
 function HomePage() {
   return (
-    <div className="h-full flex-1 text-center flex flex-col justify-center">
+    <div className="h-full text-center flex flex-col justify-center">
       <div className="">
         <h1 className="text-6xl font-bold">
           Garden <p className="text-primary inline-block">Designer</p>
