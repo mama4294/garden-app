@@ -1,12 +1,13 @@
 "use client";
 
 import {
-  PencilSquareIcon,
+  ChevronDoubleRightIcon,
   PlusCircleIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
+import Link from "next/link";
 import { useReducer } from "react";
-import { Planter } from "../typings";
+import { Planter } from "../../typings";
 
 export const PlanterList = () => {
   const initialState: Planter[] = [
@@ -48,30 +49,23 @@ export const PlanterList = () => {
   const PlanterItem = ({ data }: { data: Planter }) => {
     const { name, id } = data;
     return (
-      <div className="dropdown">
-        <label tabIndex={0} className="btn m-1 w-full">
-          {name}
-        </label>
-        <ul
-          tabIndex={0}
-          className="dropdown-content menu p-2 shadow bg-base-200 rounded-box w-52"
-        >
-          <li>
+      <div className="card w-full bg-base-200 shadow-xl">
+        <div className="card-body p-4">
+          <h2 className="card-title">{name}</h2>
+          <div className="card-actions justify-end">
             <button
-              className="gap-1"
-              onClick={() => alert("Not programmed yet")}
+              className="btn btn-cirlce btn-sm"
+              onClick={() => handleDeletePlanter(id)}
             >
-              <PencilSquareIcon className="w-6 h-6" />
-              Edit
-            </button>
-          </li>
-          <li>
-            <button className="gap-1" onClick={() => handleDeletePlanter(id)}>
               <TrashIcon className="w-6 h-6" />
-              Delete
             </button>
-          </li>
-        </ul>
+            <Link href={`/planters/${id}`}>
+              <button className="btn btn-primary btn-sm">
+                <ChevronDoubleRightIcon className="w-6 h-6" />
+              </button>
+            </Link>
+          </div>
+        </div>
       </div>
     );
   };
@@ -91,12 +85,12 @@ export const PlanterList = () => {
   console.log("state", state);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 m-4">
       <button className="btn btn-primary gap-2" onClick={handleNewPlanter}>
         <PlusCircleIcon className="h-8 w-8" />
         Design New Planter
       </button>
-      <div className=" flex flex-col gap-2 h-[300px] overflow-y-auto">
+      <div className=" flex flex-col gap-4 overflow-y-auto">
         {state.map((planter) => (
           <PlanterItem key={planter.id} data={planter} />
         ))}
