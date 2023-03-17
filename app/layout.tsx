@@ -2,8 +2,8 @@ import { Footer } from "./Footer";
 import { Navbar } from "./Navbar";
 
 export const metadata = {
-  title: "Gardening",
-  description: "An app for garden planter planning",
+  title: "Garden Designer",
+  description: "An app for designing garden planters",
 };
 
 export default function RootLayout({

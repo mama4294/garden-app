@@ -1,7 +1,14 @@
-import { PlanterList } from "./PlanterList";
+import { ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
 
 function Planters() {
-  return <div className="mx-10 md:mx-20 bg-green-200">Select a planter</div>;
+  return (
+    <div className="h-full flex justify-center items-center animate-pulse">
+      <div className="flex gap-2 items-center">
+        <ArrowLeftCircleIcon className="h-8 w-8" />
+        Select or design new planter
+      </div>
+    </div>
+  );
 }
 
 export default Planters;

@@ -49,8 +49,8 @@ export const PlanterList = () => {
   const PlanterItem = ({ data }: { data: Planter }) => {
     const { name, id } = data;
     return (
-      <div className="card w-full bg-base-200 shadow-xl">
-        <div className="card-body p-4">
+      <div className="card w-full bg-base-200 shadow-xl rounded-md">
+        <div className="card-body p-4 ">
           <h2 className="card-title">{name}</h2>
           <div className="card-actions justify-end">
             <button
@@ -81,8 +81,6 @@ export const PlanterList = () => {
   const handleDeletePlanter = (id: Number) => {
     dispatch({ type: ActionKind.DELETE_PLANTER, payload: id });
   };
-
-  console.log("state", state);
 
   return (
     <div className="flex flex-col gap-2 m-4">
