@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import {
   Stage,
   Layer,
@@ -135,18 +136,24 @@ const Konva = () => {
       <Shape
         sceneFunc={(ctx, shape) => {
           // top pointer
-          ctx.moveTo(-arrowOffset - arrowSize, arrowSize);
-          ctx.lineTo(-arrowOffset, 0);
-          ctx.lineTo(-arrowOffset + arrowSize, arrowSize);
+          ctx.moveTo(frameWidth + arrowOffset + arrowSize, arrowSize);
+          ctx.lineTo(frameWidth + arrowOffset, 0);
+          ctx.lineTo(frameWidth + arrowOffset - arrowSize, arrowSize);
 
           // line
-          ctx.moveTo(-arrowOffset, 0);
-          ctx.lineTo(-arrowOffset, frameHeight);
+          ctx.moveTo(frameWidth + arrowOffset, 0);
+          ctx.lineTo(frameWidth + arrowOffset, frameHeight);
 
           // bottom pointer
-          ctx.moveTo(-arrowOffset - arrowSize, frameHeight - arrowSize);
-          ctx.lineTo(-arrowOffset, frameHeight);
-          ctx.lineTo(-arrowOffset + arrowSize, frameHeight - arrowSize);
+          ctx.moveTo(
+            frameWidth + arrowOffset + arrowSize,
+            frameHeight - arrowSize
+          );
+          ctx.lineTo(frameWidth + arrowOffset, frameHeight);
+          ctx.lineTo(
+            frameWidth + arrowOffset - arrowSize,
+            frameHeight - arrowSize
+          );
 
           ctx.strokeShape(shape);
         }}
@@ -184,6 +191,13 @@ const Konva = () => {
     const LabelWidth = () => (
       <Label x={frameWidth / 2} y={frameHeight + arrowOffset - arrowSize}>
         <Tag fill="white" stroke="gray" />
+        <Text text={`${frameWidth} in`} padding={2} fill="black" />
+      </Label>
+    );
+
+    const LabelHight = () => (
+      <Label x={frameWidth + arrowOffset} y={frameHeight / 2}>
+        <Tag fill="white" stroke="gray" />
         <Text text={`${frameHeight} in`} padding={2} fill="black" />
       </Label>
     );
@@ -192,18 +206,66 @@ const Konva = () => {
       <Group>
         <ArrowWidth />
         <LabelWidth />
+        <ArrowHeight />
+        <LabelHight />
       </Group>
     );
   };
 
+  const stageRef = useRef(null);
+  const [state, setState] = useState({ width: 400, height: 150 });
+
+  console.log(stageRef);
+
+  //   const [stageDimentions, setStageDimentions] = useState({
+  //     width: stageRef.current?.clientWidth || 500,
+  //     height: stageRef.current?.clientHeight || 500,
+  //   })
+
+  //   function updateCanvas(widthInput, heightInput, stageRef) {
+  //     const layer = stageRef.current.getLayer();
+  //     layer.destroyChildren();
+
+  //     const frameWidth = parseInt(widthInput.value, 10);
+  //     const frameHeight = parseInt(heightInput.value, 10);
+
+  //     const wr = stageRef.current.width() / frameWidth;
+  //     const hr = stageRef.current.height() / frameHeight;
+
+  //     const ratio = Math.min(wr, hr) * 0.8;
+
+  //     const frameOnScreenWidth = frameWidth * ratio;
+  //     const frameOnScreenHeight = frameHeight * ratio;
+
+  //     const group = new Konva.Group({});
+
+  //     group.x(Math.round(stageRef.current.width() / 2 - frameOnScreenWidth / 2) + 0.5);
+  //     group.y(Math.round(stageRef.current.height() / 2 - frameOnScreenHeight / 2) + 0.5);
+
+  //     layer.add(group);
+
+  //     const frameGroup = createFrame(frameWidth, frameHeight);
+  //     frameGroup.scale({ x: ratio, y: ratio });
+  //     group.add(frameGroup);
+
+  //     const infoGroup = createInfo(frameOnScreenWidth, frameOnScreenHeight);
+  //     group.add(infoGroup);
+  //   }
+
+  //   useEffect(() => {
+  //     const widthInput = document.getElementById('width-input');
+  //     const heightInput = document.getElementById('height-input');
+
+  //     updateCanvas(widthInput, heightInput, stageRef);
+  //     setStageDimentions({width: })
+
+  //   }, []);
+
   return (
-    // Stage - is a div wrapper
-    // Layer - is an actual 2d canvas element, so you can have several layers inside the stage
-    // Rect and Circle are not DOM elements. They are 2d shapes on canvas
-    <Stage width={600} height={600}>
+    <Stage width={500} height={500} ref={stageRef}>
       <Layer>
-        <PlanterFrame frameHeight={300} frameWidth={400} />
-        <FrameDimentions frameHeight={300} frameWidth={400} />
+        <PlanterFrame frameHeight={state.height} frameWidth={state.width} />
+        <FrameDimentions frameHeight={state.height} frameWidth={state.width} />
         <Circle x={200} y={200} stroke="black" radius={50} draggable />
         <Rect width={50} height={50} fill="red" draggable />
       </Layer>

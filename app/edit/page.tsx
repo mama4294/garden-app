@@ -10,7 +10,7 @@ function EditPage() {
           <button className="btn btn-sm">Save</button>
         </div>
       </div>
-      <div className="bg-white p-4 rounded-lg">
+      <div className="bg-white p-4 rounded-lg flex-1">
         <Konva />
       </div>
     </div>

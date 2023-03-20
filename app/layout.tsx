@@ -1,5 +1,6 @@
 import { Footer } from "./Footer";
 import { Navbar } from "./Navbar";
+import "../styles/globals.css";
 
 export const metadata = {
   title: "Garden Designer",
