@@ -44,20 +44,19 @@ export type Shape = {
   selected: boolean;
   x: number;
   y: number;
+  size: number;
   type: string;
   color: string;
 };
 
 type State = {
   plants: Shape[];
-  currentPlant: string;
   width: number;
   height: number;
 };
 
 export const defaultState: State = {
   plants: [],
-  currentPlant: "Rose",
   width: 350, //inches
   height: 200, //inches
 };

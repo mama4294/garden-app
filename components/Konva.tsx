@@ -1,8 +1,6 @@
 "use client";
-
-import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { ChangeEvent, useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import {
   Stage,
   Layer,
@@ -18,10 +16,11 @@ import {
   ACTIONS,
   defaultState,
   planterReducer,
-  Shape as Plant,
+  Shape as ShapeType,
 } from "../app/reducers/planterReducer";
+import { Plant } from "../typings";
 
-const KonvaCanvas = () => {
+const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
   const PlanterFrame = ({
     frameWidth,
     frameHeight,
@@ -238,8 +237,9 @@ const KonvaCanvas = () => {
       payload: {
         x: location.x,
         y: location.y,
-        type: state.currentPlant,
-        color: "blue",
+        type: selectedPlant.label,
+        color: selectedPlant.color,
+        size: selectedPlant.size,
         id: newID(),
         selected: false,
       },
@@ -369,15 +369,15 @@ const KonvaCanvas = () => {
               frameHeight={state.height}
               frameWidth={state.width}
             />
-            {state.plants.map((s: Plant) => (
+            {state.plants.map((s: ShapeType) => (
               <Rect
                 key={s.id}
                 id={s.id}
                 x={s.x}
                 y={s.y}
                 draggable
-                width={50}
-                height={50}
+                width={s.size}
+                height={s.size}
                 stroke="black"
                 fill={s.color}
                 strokeWidth={s.selected ? 3 : 0}
