@@ -1,20 +1,27 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import Konva from "konva";
+import { KonvaEventObject } from "konva/lib/Node";
+import { ChangeEvent, useEffect, useReducer, useRef, useState } from "react";
 import {
   Stage,
   Layer,
   Rect,
-  Circle,
   Group,
   Line,
-  Shape,
   Tag,
   Text,
   Label,
+  Shape,
 } from "react-konva";
+import {
+  ACTIONS,
+  defaultState,
+  planterReducer,
+  Shape as Plant,
+} from "../app/reducers/planterReducer";
 
-const Konva = () => {
+const KonvaCanvas = () => {
   const PlanterFrame = ({
     frameWidth,
     frameHeight,
@@ -212,297 +219,178 @@ const Konva = () => {
     );
   };
 
-  const stageRef = useRef<HTMLDivElement>(null);
-  const [state, setState] = useState({ width: 400, height: 150 });
+  const newID = () => {
+    //creates new id
+    return Math.floor(Math.random() * 100).toString();
+  };
 
-  console.log(stageRef);
+  //create a reference to a konva stage with type definition
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const [state, dispatch] = useReducer(planterReducer, defaultState);
 
-  //Canvas container dimensions so that the canvas can be resized to full fill the container
-  const [canvasDimention, setCanvasDimention] = useState({
-    width: stageRef.current?.clientWidth || 500,
-    height: stageRef.current?.clientHeight || 500,
+  const drawShape = (e: KonvaEventObject<MouseEvent>) => {
+    const location = stagePositionFromMouse({
+      x: e.evt.clientX,
+      y: e.evt.clientY,
+    });
+    dispatch({
+      type: ACTIONS.ADD_PLANT,
+      payload: {
+        x: location.x,
+        y: location.y,
+        type: state.currentPlant,
+        color: "blue",
+        id: newID(),
+        selected: false,
+      },
+    });
+  };
+
+  const selectShape = (e: KonvaEventObject<MouseEvent>) => {
+    console.log(e.currentTarget.id);
+  };
+
+  const handleDragStart = (e: KonvaEventObject<DragEvent>) => {};
+
+  const handleDragEnd = (e: KonvaEventObject<DragEvent>) => {
+    dispatch({
+      type: ACTIONS.MOVES_PLANT,
+      payload: {
+        x: e.evt.offsetX,
+        y: e.evt.offsetY,
+        id: e.target.id(),
+      },
+    });
+  };
+
+  type Rectangle = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    fill: string;
+  };
+
+  const stagePositionFromMouse = ({ x, y }: { x: number; y: number }) => {
+    const canvasRect = canvasRef!.current!.getBoundingClientRect();
+    const posX = (x - canvasRect.left) / canvasSize.scale;
+    const posY = (y - canvasRect.top) / canvasSize.scale;
+    return { x: posX, y: posY };
+  };
+
+  const [rectangles, setRectangles] = useState<Rectangle[]>([]);
+
+  const handleStageClick = (event: KonvaEventObject<MouseEvent>) => {
+    const stageLocation = stagePositionFromMouse({
+      x: event.evt.clientX,
+      y: event.evt.clientY,
+    });
+
+    const newRectangle = {
+      x: stageLocation.x,
+      y: stageLocation.y,
+      width: 50,
+      height: 50,
+      fill: "red",
+    };
+    setRectangles([...rectangles, newRectangle]);
+  };
+
+  const [canvasSize, setCanvasSize] = useState({
+    width: 300,
+    height: 300,
+    scale: 1,
   });
 
-  //Used to update the canvas when the window is resized
   useEffect(() => {
     const handleResize = () => {
-      const resizedDimentions = {
-        width: stageRef.current?.clientWidth || 500,
-        height: stageRef.current?.clientHeight || 500,
-      };
+      const width = canvasRef!.current!.offsetWidth;
+      const height = canvasRef!.current!.offsetHeight;
+      const scale = Math.min(width / state.width, height / state.height) * 0.8;
 
-      setCanvasDimention(resizedDimentions);
-      console.table(resizedDimentions);
+      console.table({ width, height, scale });
+      setCanvasSize({
+        width,
+        height,
+        scale,
+      });
     };
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  });
-
-  //Calculate the ratio to scale the frame depending on the container size
-  const ratioWidth = canvasDimention.width / state.width;
-  const ratioHeight = canvasDimention.height / state.height;
-  const ratio = Math.min(ratioWidth, ratioHeight) * 0.8;
-
-  const frameOnScreenWidth = state.width * ratio;
-  const frameOnScreenHeight = state.height * ratio;
-
-  //center the frame on the screen
-  const frameX =
-    Math.round(canvasDimention.width / 2 - frameOnScreenWidth / 2) + 0.5;
-  const frameY =
-    Math.round(canvasDimention.height / 2 - frameOnScreenHeight / 2) + 0.5;
+  }, [state]);
 
   return (
-    <div className="h-full w-full " ref={stageRef}>
-      <Stage width={canvasDimention.width} height={canvasDimention.height}>
-        <Layer x={frameX} y={frameY} scaleX={ratio} scaleY={ratio}>
-          <Group>
+    <>
+      {/* <div className="p-2">
+        <p>Scale: {canvasSize.scale}</p>
+        <div className="form-control w-full max-w-xs">
+          <label className="label">
+            <span className="label-text">Frame Width</span>
+          </label>
+          <input
+            value={state.width}
+            className="input input-bordered w-full"
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              dispatch({
+                type: ACTIONS.CHANGE_PLANTER_WIDTH,
+                payload: Number(e.target.value),
+              })
+            }
+          />
+        </div>
+        <div className="form-control w-full max-w-xs">
+          <label className="label">
+            <span className="label-text">Frame Height</span>
+          </label>
+          <input
+            value={state.height}
+            className="input input-bordered w-full"
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              dispatch({
+                type: ACTIONS.CHANGE_PLANTER_HEIGHT,
+                payload: Number(e.target.value),
+              })
+            }
+          />
+        </div>
+      </div> */}
+      <div className="h-full w-full " ref={canvasRef}>
+        <Stage
+          width={canvasSize.width}
+          height={canvasSize.height}
+          onClick={drawShape}
+          scaleX={canvasSize.scale}
+          scaleY={canvasSize.scale}
+        >
+          <Layer>
             <PlanterFrame frameHeight={state.height} frameWidth={state.width} />
             <FrameDimentions
               frameHeight={state.height}
               frameWidth={state.width}
             />
-            {/* <Circle x={200} y={200} stroke="black" radius={50} draggable />
-            <Rect width={50} height={50} fill="red" draggable /> */}
-          </Group>
-        </Layer>
-      </Stage>
-    </div>
+            {state.plants.map((s: Plant) => (
+              <Rect
+                key={s.id}
+                id={s.id}
+                x={s.x}
+                y={s.y}
+                draggable
+                width={50}
+                height={50}
+                stroke="black"
+                fill={s.color}
+                strokeWidth={s.selected ? 3 : 0}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                onClick={selectShape}
+              />
+            ))}
+          </Layer>
+        </Stage>
+      </div>
+    </>
   );
 };
 
-export default Konva;
-
-//   import './styles.css';
-//   import { Stage, Layer, Rect, Circle, Star } from 'react-konva';
-//   import { v4 } from 'uuid';
-//   import { ACTIONS, defaultState, shapeReducer } from './reducer';
-//   import { useReducer } from 'react';
-
-//   export default function App() {
-//     const [shapeState, dispatch] = useReducer(shapeReducer, defaultState);
-
-//     const drawShape = (e) => {
-//       dispatch({
-//         type: ACTIONS.ADD_SHAPE,
-//         payload: {
-//           x: e.evt.offsetX,
-//           y: e.evt.offsetY,
-//           type: shapeState.currentShape,
-//           color: shapeState.color,
-//           id: v4(),
-//           selected: false
-//         }
-//       });
-//     };
-
-//     const handleDragStart = (e) => {};
-
-//     const handleDragEnd = (e) => {
-//       dispatch({
-//         type: ACTIONS.MOVES_SHAPE,
-//         x: e.evt.offsetX,
-//         y: e.evt.offsetY,
-//         id: e.target.id()
-//       });
-//     };
-
-//     const onSelect = (e) => {
-//       e.cancelBubble = true;
-//       const id = e.target.id();
-
-//       const shape = shapeState.shapes.find((s) => s.id === id);
-
-//       dispatch({
-//         type: shape.selected ? ACTIONS.UNSELECT_SHAPE : ACTIONS.SELECT_SHAPE,
-//         payload: { id }
-//       });
-//     };
-
-//     return (
-//       <div className="container">
-//         <div className="row">
-//           <div className="column">
-//             <h1>React Konva Drawing App</h1>
-//           </div>
-//         </div>
-//         <div className="row">
-//           <main>
-//             <Stage
-//               style={{ border: 'solid black' }}
-//               width={500}
-//               height={500}
-//               onClick={drawShape}
-//             >
-//               <Layer>
-//                 {shapeState.shapes.map((s) => {
-//                   switch (s.type) {
-//                     case 'circle':
-//                       return (
-//                         <Circle
-//                           key={s.id}
-//                           id={s.id}
-//                           x={s.x}
-//                           y={s.y}
-//                           draggable
-//                           radius={50}
-//                           strokeWidth={s.selected ? 3 : 0}
-//                           stroke="black"
-//                           fill={s.color}
-//                           onDragStart={handleDragStart}
-//                           onDragEnd={handleDragEnd}
-//                           onClick={onSelect}
-//                         />
-//                       );
-//                     case 'rectangle':
-//                       return (
-//                         <Rect
-//                           key={s.id}
-//                           id={s.id}
-//                           x={s.x}
-//                           y={s.y}
-//                           draggable
-//                           width={50}
-//                           height={50}
-//                           stroke="black"
-//                           fill={s.color}
-//                           strokeWidth={s.selected ? 3 : 0}
-//                           onDragStart={handleDragStart}
-//                           onDragEnd={handleDragEnd}
-//                           onClick={onSelect}
-//                         />
-//                       );
-//                     case 'star':
-//                       return (
-//                         <Star
-//                           key={s.id}
-//                           id={s.id}
-//                           x={s.x}
-//                           y={s.y}
-//                           draggable
-//                           width={80}
-//                           height={80}
-//                           fill={s.color}
-//                           stroke="black"
-//                           strokeWidth={s.selected ? 3 : 0}
-//                           onDragStart={handleDragStart}
-//                           onDragEnd={handleDragEnd}
-//                           numPoints={5}
-//                           innerRadius={20}
-//                           outerRadius={50}
-//                           onClick={onSelect}
-//                         />
-//                       );
-
-//                     default:
-//                       return <></>;
-//                   }
-//                 })}
-//               </Layer>
-//             </Stage>
-//           </main>
-//         </div>
-
-//         <div className="row">
-//           <div className="column">
-//             <label htmlFor="shape">Shape</label>
-//             <select
-//               value={shapeState.currentShape}
-//               onChange={(e) =>
-//                 dispatch({
-//                   type: ACTIONS.CHANGE_SHAPE,
-//                   payload: e.target.value
-//                 })
-//               }
-//               id="shape"
-//             >
-//               <option value="circle">Circle</option>
-//               <option value="rectangle">Rectangle</option>
-//               <option value="star">Star</option>
-//             </select>
-//           </div>
-//         </div>
-//         <div className="row">
-//           <div className="column">
-//             <input
-//               value={shapeState.color}
-//               type="color"
-//               onChange={(e) =>
-//                 dispatch({ type: ACTIONS.CHANGE_COLOR, payload: e.target.value })
-//               }
-//               name=""
-//               id=""
-//             />
-//           </div>
-//         </div>
-//         <div className="row">
-//           <div className="column">
-//             <button onClick={() => dispatch({ type: ACTIONS.CLEAR })}>
-//               Clear
-//             </button>
-//           </div>
-//           <div className="column">
-//             <button onClick={() => dispatch({ type: ACTIONS.DELETED_SELECTED })}>
-//               Remove Selected
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     );
-//   }
-
-// export const ACTIONS = Object.freeze({
-//     CHANGE_COLOR: 'CHANGE_COLOR',
-//     ADD_CIRCLE: 'ADD_SHAPE',
-//     CLEAR: 'CLEAR',
-//     MOVES_SHAPE: 'MOVE_SHAPE',
-//     SELECT_SHAPE: 'SELECT_SHAPE',
-//     UNSELECT_SHAPE: 'UNSELECT_SHAPE',
-//     CHANGE_SHAPE: 'CHANGE_SHAPE',
-//     DELETED_SELECTED: 'DELETED_SELECTED'
-//   });
-
-//   export const shapeReducer = (state, action) => {
-//     switch (action.type) {
-//       case ACTIONS.CHANGE_COLOR:
-//         return {
-//           ...state,
-//           color: action.payload,
-//           shapes: state.shapes.map((s) => {
-//             return { ...s, color: s.selected ? action.payload : s.color };
-//           })
-//         };
-//       case ACTIONS.ADD_SHAPE:
-//         return { ...state, shapes: [...state.shapes, { ...action.payload }] };
-//       case ACTIONS.CLEAR:
-//         return { ...state, shapes: [] };
-//       case ACTIONS.SELECT_SHAPE:
-//       case ACTIONS.UNSELECT_SHAPE:
-//         const shape = state.shapes.find((s) => s.id === action.payload.id);
-//         return {
-//           ...state,
-//           shapes: [
-//             ...state.shapes.filter((s) => s.id !== action.payload.id),
-//             { ...shape, selected: action.type === ACTIONS.SELECT_SHAPE }
-//           ]
-//         };
-//       case ACTIONS.CHANGE_SHAPE:
-//         return {
-//           ...state,
-//           currentShape: action.payload
-//         };
-//       case ACTIONS.DELETED_SELECTED:
-//         return {
-//           ...state,
-//           shapes: state.shapes.filter((s) => !s.selected)
-//         };
-//       default:
-//         return state;
-//     }
-//   };
-
-//   export const defaultState = {
-//     shapes: [],
-//     currentShape: 'star',
-//     color: '#AA0000'
-//   };
+export default KonvaCanvas;
