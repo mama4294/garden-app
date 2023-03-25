@@ -1,4 +1,5 @@
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
 type PageProps = {
   params: {
@@ -15,10 +16,10 @@ function PlanterPage(props: PageProps) {
         <div className="card-body">
           <h2 className="card-title"> {`Planter ${planterId}`}</h2>
           <div className="card-actions justify-end">
-            <button className="btn btn-primary flex gap-1">
+            <Link className="btn btn-primary flex gap-1" href={"/edit"}>
               <PencilIcon className="w-6 h-6" />
               Edit
-            </button>
+            </Link>
           </div>
         </div>
       </div>
