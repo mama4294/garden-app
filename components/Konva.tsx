@@ -1,6 +1,6 @@
 "use client";
 import { KonvaEventObject } from "konva/lib/Node";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useReducer, useRef, useState } from "react";
 import {
   Stage,
   Layer,
@@ -323,7 +323,6 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
   return (
     <>
       {/* <div className="p-2">
-        <p>Scale: {canvasSize.scale}</p>
         <div className="form-control w-full max-w-xs">
           <label className="label">
             <span className="label-text">Frame Width</span>

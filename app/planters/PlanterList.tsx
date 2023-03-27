@@ -6,7 +6,8 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { useReducer } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useReducer, useState } from "react";
 import { Planter } from "../../typings";
 
 export const PlanterList = () => {
@@ -48,25 +49,25 @@ export const PlanterList = () => {
 
   const PlanterItem = ({ data }: { data: Planter }) => {
     const { name, id } = data;
+    const pathName = usePathname();
+
+    const [selected, setSelected] = useState(false);
+
+    //sets which planter is selected based on the URL so that the background color changes
+    useEffect(() => {
+      if (!pathName) return;
+      setSelected(pathName === `/planters/${id}`);
+    }, [pathName]);
+
     return (
-      <div className="card w-full bg-base-200 shadow-xl rounded-md">
-        <div className="card-body p-4 ">
-          <h2 className="card-title">{name}</h2>
-          <div className="card-actions justify-end">
-            <button
-              className="btn btn-cirlce btn-sm"
-              onClick={() => handleDeletePlanter(id)}
-            >
-              <TrashIcon className="w-6 h-6" />
-            </button>
-            <Link href={`/planters/${id}`}>
-              <button className="btn btn-primary btn-sm">
-                <ChevronDoubleRightIcon className="w-6 h-6" />
-              </button>
-            </Link>
-          </div>
-        </div>
-      </div>
+      <Link
+        href={`/planters/${id}`}
+        className={`card w-full cursor-pointer hover:shadow p-4 rounded-md hover:bg-base-200  ${
+          selected && "bg-base-200 shadow"
+        }`}
+      >
+        <p className="text-sm md:text-base font-bold">{name}</p>
+      </Link>
     );
   };
 
@@ -84,7 +85,10 @@ export const PlanterList = () => {
 
   return (
     <div className="flex flex-col gap-2 m-4">
-      <button className="btn btn-primary gap-2" onClick={handleNewPlanter}>
+      <button
+        className="btn btn-primary  gap-2 flex-nowrap  "
+        onClick={handleNewPlanter}
+      >
         <PlusCircleIcon className="h-8 w-8" />
         Design New Planter
       </button>
