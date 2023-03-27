@@ -22,6 +22,9 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useReducer(planterReducer, defaultState);
   const [mouse, setMouse] = useState<Mouse>({ x: 0, y: 0 });
+  let padding = 12;
+  if (state.height < 50 || state.width < 50)
+    padding = Math.min(state.height, state.width) / 4;
 
   type Mouse = {
     x: number;
@@ -105,7 +108,7 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
 
   return (
     <>
-      {/* <div className="p-2">
+      <div className="p-2">
         <div className="form-control w-full max-w-xs">
           <label className="label">
             <span className="label-text">Frame Width</span>
@@ -136,7 +139,7 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
             }
           />
         </div>
-      </div> */}
+      </div>
       <div className="h-full w-full " ref={canvasRef}>
         <Stage
           width={canvasSize.width}
@@ -149,7 +152,7 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
             <PlanterFrame
               height={state.height}
               width={state.width}
-              padding={12}
+              frameSize={12}
             />
             <FrameDimentions height={state.height} width={state.width} />
             {state.plants.map((s: ShapeType) => (
@@ -180,9 +183,11 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
               y={mouse.y - selectedPlant.size / 2}
             />
           </Layer>
-          <Layer
+          <Layer //Cursor layer. Keeps the plant preview in the planter
             width={state.width}
             height={state.height}
+            y={padding + selectedPlant.size / 2}
+            x={padding + selectedPlant.size / 2}
             onMouseMove={handleMouseMove}
           >
             <Rect
