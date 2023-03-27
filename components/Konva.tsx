@@ -1,17 +1,7 @@
 "use client";
 import { KonvaEventObject } from "konva/lib/Node";
 import { ChangeEvent, useEffect, useReducer, useRef, useState } from "react";
-import {
-  Stage,
-  Layer,
-  Rect,
-  Group,
-  Line,
-  Tag,
-  Text,
-  Label,
-  Shape,
-} from "react-konva";
+import { Stage, Layer, Rect } from "react-konva";
 import {
   ACTIONS,
   defaultState,
@@ -19,205 +9,10 @@ import {
   Shape as ShapeType,
 } from "../app/reducers/planterReducer";
 import { Plant } from "../typings";
+import FrameDimentions from "./FrameDimentions";
+import PlanterFrame from "./PlanterFrame";
 
 const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
-  const PlanterFrame = ({
-    frameWidth,
-    frameHeight,
-  }: {
-    frameWidth: number;
-    frameHeight: number;
-  }) => {
-    const padding = 12;
-    const frameColor = "white";
-    const fillColor = "lightgreen";
-
-    const FrameTop = () => (
-      <Line // Top Frame
-        points={[
-          0,
-          0,
-          frameWidth,
-          0,
-          frameWidth - padding,
-          padding,
-          padding,
-          padding,
-        ]}
-        closed={true}
-        fill={frameColor}
-        stroke="black"
-        strokeWidth={1}
-      />
-    );
-
-    const FrameLeft = () => (
-      <Line // Top Frame
-        points={[
-          0,
-          0,
-          padding,
-          padding,
-          padding,
-          frameHeight - padding,
-          0,
-          frameHeight,
-        ]}
-        closed={true}
-        fill={frameColor}
-        stroke="black"
-        strokeWidth={1}
-      />
-    );
-    const FrameBottom = () => (
-      <Line // Top Frame
-        points={[
-          0,
-          frameHeight,
-          padding,
-          frameHeight - padding,
-          frameWidth - padding,
-          frameHeight - padding,
-          frameWidth,
-          frameHeight,
-        ]}
-        closed={true}
-        fill={frameColor}
-        stroke="black"
-        strokeWidth={1}
-      />
-    );
-    const FrameRight = () => (
-      <Line // Top Frame
-        points={[
-          frameWidth,
-          0,
-          frameWidth,
-          frameHeight,
-          frameWidth - padding,
-          frameHeight - padding,
-          frameWidth - padding,
-          padding,
-        ]}
-        closed={true}
-        fill={frameColor}
-        stroke="black"
-        strokeWidth={1}
-      />
-    );
-
-    const FillArea = () => (
-      <Rect // Inside Area
-        x={padding}
-        y={padding}
-        width={frameWidth - padding * 2}
-        height={frameHeight - padding * 2}
-        fill={fillColor}
-      />
-    );
-
-    return (
-      <Group>
-        <FrameTop />
-        <FrameLeft />
-        <FrameBottom />
-        <FrameRight />
-        <FillArea />
-      </Group>
-    );
-  };
-
-  const FrameDimentions = ({
-    frameWidth,
-    frameHeight,
-  }: {
-    frameWidth: number;
-    frameHeight: number;
-  }) => {
-    const dimentionOffset = 20;
-    const arrowOffset = dimentionOffset / 2;
-    const arrowSize = 5;
-
-    const ArrowHeight = () => (
-      <Shape
-        sceneFunc={(ctx, shape) => {
-          // top pointer
-          ctx.moveTo(frameWidth + arrowOffset + arrowSize, arrowSize);
-          ctx.lineTo(frameWidth + arrowOffset, 0);
-          ctx.lineTo(frameWidth + arrowOffset - arrowSize, arrowSize);
-
-          // line
-          ctx.moveTo(frameWidth + arrowOffset, 0);
-          ctx.lineTo(frameWidth + arrowOffset, frameHeight);
-
-          // bottom pointer
-          ctx.moveTo(
-            frameWidth + arrowOffset + arrowSize,
-            frameHeight - arrowSize
-          );
-          ctx.lineTo(frameWidth + arrowOffset, frameHeight);
-          ctx.lineTo(
-            frameWidth + arrowOffset - arrowSize,
-            frameHeight - arrowSize
-          );
-
-          ctx.strokeShape(shape);
-        }}
-        fill="#00D2FF"
-        stroke="gray"
-        strokeWidth={0.5}
-      />
-    );
-    const ArrowWidth = () => (
-      <Shape
-        sceneFunc={(ctx, shape) => {
-          // top pointer
-          ctx.translate(0, frameHeight + arrowOffset);
-          ctx.moveTo(arrowSize, -arrowSize);
-          ctx.lineTo(0, 0);
-          ctx.lineTo(arrowSize, arrowSize);
-
-          // line
-          ctx.moveTo(0, 0);
-          ctx.lineTo(frameWidth, 0);
-
-          // bottom pointer
-          ctx.moveTo(frameWidth - arrowSize, -arrowSize);
-          ctx.lineTo(frameWidth, 0);
-          ctx.lineTo(frameWidth - arrowSize, arrowSize);
-
-          ctx.strokeShape(shape);
-        }}
-        fill="#00D2FF"
-        stroke="gray"
-        strokeWidth={1}
-      />
-    );
-
-    const LabelWidth = () => (
-      <Label x={frameWidth / 2} y={frameHeight + arrowOffset - arrowSize}>
-        <Tag fill="white" stroke="gray" />
-        <Text text={`${frameWidth} in`} padding={2} fill="black" />
-      </Label>
-    );
-
-    const LabelHight = () => (
-      <Label x={frameWidth + arrowOffset} y={frameHeight / 2}>
-        <Tag fill="white" stroke="gray" />
-        <Text text={`${frameHeight} in`} padding={2} fill="black" />
-      </Label>
-    );
-
-    return (
-      <Group>
-        <ArrowWidth />
-        <LabelWidth />
-        <ArrowHeight />
-        <LabelHight />
-      </Group>
-    );
-  };
-
   const newID = () => {
     //creates new id
     return Math.floor(Math.random() * 100).toString();
@@ -349,14 +144,14 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
           onClick={drawShape}
           scaleX={canvasSize.scale}
           scaleY={canvasSize.scale}
-          onMouseMove={handleMouseMove}
         >
           <Layer>
-            <PlanterFrame frameHeight={state.height} frameWidth={state.width} />
-            <FrameDimentions
-              frameHeight={state.height}
-              frameWidth={state.width}
+            <PlanterFrame
+              height={state.height}
+              width={state.width}
+              padding={12}
             />
+            <FrameDimentions height={state.height} width={state.width} />
             {state.plants.map((s: ShapeType) => (
               <Rect
                 key={s.id}
@@ -374,7 +169,6 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
                 onClick={selectShape}
               />
             ))}
-
             {/* Cursor */}
             <Rect
               width={selectedPlant.size}
@@ -384,6 +178,18 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
               opacity={0.5}
               x={mouse.x - selectedPlant.size / 2}
               y={mouse.y - selectedPlant.size / 2}
+            />
+          </Layer>
+          <Layer
+            width={state.width}
+            height={state.height}
+            onMouseMove={handleMouseMove}
+          >
+            <Rect
+              width={state.width}
+              height={state.height}
+              fill="white"
+              opacity={0}
             />
           </Layer>
         </Stage>
