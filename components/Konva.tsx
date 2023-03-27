@@ -226,6 +226,12 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
   //create a reference to a konva stage with type definition
   const canvasRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useReducer(planterReducer, defaultState);
+  const [mouse, setMouse] = useState<Mouse>({ x: 0, y: 0 });
+
+  type Mouse = {
+    x: number;
+    y: number;
+  };
 
   const drawShape = (e: KonvaEventObject<MouseEvent>) => {
     const location = stagePositionFromMouse({
@@ -235,8 +241,8 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
     dispatch({
       type: ACTIONS.ADD_PLANT,
       payload: {
-        x: location.x,
-        y: location.y,
+        x: location.x - selectedPlant.size / 2, //center the plant
+        y: location.y - selectedPlant.size / 2, //center the plant
         type: selectedPlant.label,
         color: selectedPlant.color,
         size: selectedPlant.size,
@@ -263,12 +269,12 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
     });
   };
 
-  type Rectangle = {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    fill: string;
+  const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+    const location = stagePositionFromMouse({
+      x: e.evt.clientX,
+      y: e.evt.clientY,
+    });
+    setMouse({ x: location.x, y: location.y });
   };
 
   const stagePositionFromMouse = ({ x, y }: { x: number; y: number }) => {
@@ -276,24 +282,6 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
     const posX = (x - canvasRect.left) / canvasSize.scale;
     const posY = (y - canvasRect.top) / canvasSize.scale;
     return { x: posX, y: posY };
-  };
-
-  const [rectangles, setRectangles] = useState<Rectangle[]>([]);
-
-  const handleStageClick = (event: KonvaEventObject<MouseEvent>) => {
-    const stageLocation = stagePositionFromMouse({
-      x: event.evt.clientX,
-      y: event.evt.clientY,
-    });
-
-    const newRectangle = {
-      x: stageLocation.x,
-      y: stageLocation.y,
-      width: 50,
-      height: 50,
-      fill: "red",
-    };
-    setRectangles([...rectangles, newRectangle]);
   };
 
   const [canvasSize, setCanvasSize] = useState({
@@ -361,6 +349,7 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
           onClick={drawShape}
           scaleX={canvasSize.scale}
           scaleY={canvasSize.scale}
+          onMouseMove={handleMouseMove}
         >
           <Layer>
             <PlanterFrame frameHeight={state.height} frameWidth={state.width} />
@@ -379,12 +368,23 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
                 height={s.size}
                 stroke="black"
                 fill={s.color}
-                strokeWidth={s.selected ? 3 : 0}
+                strokeWidth={s.selected ? 3 : 1}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 onClick={selectShape}
               />
             ))}
+
+            {/* Cursor */}
+            <Rect
+              width={selectedPlant.size}
+              height={selectedPlant.size}
+              stroke="black"
+              fill={selectedPlant.color}
+              opacity={0.5}
+              x={mouse.x - selectedPlant.size / 2}
+              y={mouse.y - selectedPlant.size / 2}
+            />
           </Layer>
         </Stage>
       </div>
