@@ -2,6 +2,7 @@
 import { KonvaEventObject } from "konva/lib/Node";
 import { ChangeEvent, useEffect, useReducer, useRef, useState } from "react";
 import { Stage, Layer, Rect } from "react-konva";
+import { MODE } from "../app/edit/page";
 import {
   ACTIONS,
   defaultState,
@@ -12,7 +13,17 @@ import { Plant } from "../typings";
 import FrameDimentions from "./FrameDimentions";
 import PlanterFrame from "./PlanterFrame";
 
-const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
+interface KeyboardEvent {
+  key: string;
+}
+
+const KonvaCanvas = ({
+  selectedPlant,
+  mode,
+}: {
+  selectedPlant: Plant;
+  mode: MODE;
+}) => {
   const newID = () => {
     //creates new id
     return Math.floor(Math.random() * 100).toString();
@@ -33,28 +44,59 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
     y: number;
   };
 
-  const drawShape = (e: KonvaEventObject<MouseEvent>) => {
+  const handleClick = (e: KonvaEventObject<MouseEvent>) => {
+    switch (mode) {
+      case MODE.ADD:
+        dispatch({
+          type: ACTIONS.ADD_PLANT,
+          payload: {
+            x: cursorBlock.x,
+            y: cursorBlock.y,
+            type: selectedPlant.label,
+            color: selectedPlant.color,
+            size: selectedPlant.size,
+            id: newID(),
+            selected: false,
+          },
+        });
+    }
+  };
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      console.log("keydown", event.key);
+      if (event.key == "Delete" || event.key == "Backspace") {
+        console.log("deleting");
+        dispatch({
+          type: ACTIONS.DELETED_SELECTED,
+        });
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return function cleanup() {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  const selectShape = (e: KonvaEventObject<MouseEvent>) => {
+    const id = e.currentTarget.id();
+    if (!id) return;
     dispatch({
-      type: ACTIONS.ADD_PLANT,
+      type: ACTIONS.SELECT_PLANT,
       payload: {
-        x: cursorBlock.x,
-        y: cursorBlock.y,
-        type: selectedPlant.label,
-        color: selectedPlant.color,
-        size: selectedPlant.size,
-        id: newID(),
-        selected: false,
+        id,
       },
     });
   };
 
-  const selectShape = (e: KonvaEventObject<MouseEvent>) => {
-    console.log(e.currentTarget.id);
+  const handleDragStart = (e: KonvaEventObject<DragEvent>) => {
+    console.log("dragging");
   };
 
-  const handleDragStart = (e: KonvaEventObject<DragEvent>) => {};
-
   const handleDragEnd = (e: KonvaEventObject<DragEvent>) => {
+    console.log("end drag");
     dispatch({
       type: ACTIONS.MOVES_PLANT,
       payload: {
@@ -107,6 +149,7 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
       const scale = Math.min(width / state.width, height / state.height) * 0.8;
 
       console.table({ width, height, scale });
+      console.table(state);
       setCanvasSize({
         width,
         height,
@@ -156,7 +199,8 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
         <Stage
           width={canvasSize.width}
           height={canvasSize.height}
-          onClick={drawShape}
+          onClick={handleClick}
+          onMouseMove={handleMouseMove}
           scaleX={canvasSize.scale}
           scaleY={canvasSize.scale}
         >
@@ -189,17 +233,19 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
               />
             ))}
             {/* Cursor */}
-            <Rect
-              width={selectedPlant.size}
-              height={selectedPlant.size}
-              stroke="black"
-              fill={selectedPlant.color}
-              opacity={0.5}
-              x={cursorBlock.x}
-              y={cursorBlock.y}
-            />
+            {mode == MODE.ADD && (
+              <Rect
+                width={selectedPlant.size}
+                height={selectedPlant.size}
+                stroke="black"
+                fill={selectedPlant.color}
+                opacity={0.5}
+                x={cursorBlock.x}
+                y={cursorBlock.y}
+              />
+            )}
           </Layer>
-          <Layer //Cursor layer. Keeps the plant preview in the planter
+          {/* <Layer //Cursor layer. Keeps the plant preview in the planter
             width={state.width}
             height={state.height}
             y={FRAME_SIZE + selectedPlant.size / 2}
@@ -212,7 +258,7 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
               fill="white"
               opacity={0}
             />
-          </Layer>
+          </Layer> */}
         </Stage>
       </div>
     </>

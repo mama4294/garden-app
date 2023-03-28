@@ -1,9 +1,19 @@
 "use client";
 
+import {
+  CursorArrowRaysIcon,
+  PlusIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 import { useState } from "react";
 import Select, { SingleValue } from "react-select";
 import Konva from "../../components/Konva";
 import { Plant } from "../../typings";
+
+export enum MODE {
+  SELECT = "SELECT",
+  ADD = "ADD",
+}
 
 function EditPage() {
   const options: Plant[] = [
@@ -25,10 +35,34 @@ function EditPage() {
     });
   };
 
+  const [mode, setMode] = useState(MODE.ADD);
+
   return (
     <div className="flex flex-col gap-4 m-4 md:flex-row">
       <div className="bg-white p-4 rounded-lg shadow-md">
         <div className="flex gap-2 justify-between items-center md:flex-col ">
+          <button
+            className={`btn btn-sm  ${
+              mode == MODE.SELECT ? "btn-primary" : "btn-ghost"
+            }`}
+            onClick={() => setMode(MODE.SELECT)}
+          >
+            <CursorArrowRaysIcon className="h-6 w-6" />
+          </button>
+          <button
+            className={`btn btn-sm  ${
+              mode == MODE.ADD ? "btn-primary" : "btn-ghost"
+            }`}
+            onClick={() => setMode(MODE.ADD)}
+          >
+            <PlusIcon className="h-6 w-6" />
+          </button>
+          <button
+            className="btn btn-sm btn-ghost"
+            onClick={() => console.log("delete")}
+          >
+            <TrashIcon className="h-6 w-6" />
+          </button>
           <Select
             options={options}
             onChange={changeSelectedPlant}
@@ -38,7 +72,7 @@ function EditPage() {
         </div>
       </div>
       <div className="bg-white p-4 rounded-lg flex-1 shadow-md">
-        <Konva selectedPlant={selectedPlant} />
+        <Konva selectedPlant={selectedPlant} mode={mode} />
       </div>
     </div>
   );

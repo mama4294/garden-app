@@ -20,11 +20,7 @@ type Action =
       payload: Shape;
     }
   | {
-      type: ACTIONS.CLEAR;
-    }
-  | {
-      type: ACTIONS.DELETED_SELECTED;
-      payload: string[];
+      type: ACTIONS.CLEAR | ACTIONS.DELETED_SELECTED;
     }
   | {
       type: ACTIONS.SELECT_PLANT;
@@ -72,19 +68,19 @@ export const planterReducer = (state: State, action: Action) => {
     case ACTIONS.MOVES_PLANT:
       return state;
     case ACTIONS.SELECT_PLANT:
-      const plant = state.plants.filter(
-        (s: Shape) => s.id == action.payload.id
-      );
-      return {
-        ...state,
-        plant: [...state.plants, { ...plant, selected: true }],
-      };
+      const newPlants = state.plants.map((plant: Shape) => {
+        if (plant.id === action.payload.id) {
+          return { ...plant, selected: true };
+        }
+        return plant;
+      });
+      return { ...state, plants: newPlants };
     case ACTIONS.CLEAR:
-      return { ...state, shapes: [] };
+      return { ...state, plants: [] };
     case ACTIONS.DELETED_SELECTED:
       return {
         ...state,
-        shapes: state.plants.filter((s: Shape) => !s.selected),
+        plants: state.plants.filter((s: Shape) => !s.selected),
       };
     default:
       return state;
