@@ -3,9 +3,11 @@ import { Group, Label, Shape, Tag, Text } from "react-konva";
 const FrameDimentions = ({
   width,
   height,
+  frameSize,
 }: {
   width: number;
   height: number;
+  frameSize: number;
 }) => {
   const dimentionOffset = 20;
   const arrowOffset = dimentionOffset / 2;
@@ -15,18 +17,30 @@ const FrameDimentions = ({
     <Shape
       sceneFunc={(ctx, shape) => {
         // top pointer
-        ctx.moveTo(width + arrowOffset + arrowSize, arrowSize);
-        ctx.lineTo(width + arrowOffset, 0);
-        ctx.lineTo(width + arrowOffset - arrowSize, arrowSize);
+        ctx.moveTo(
+          width + arrowOffset + arrowSize + frameSize * 3,
+          arrowSize + frameSize
+        );
+        ctx.lineTo(width + arrowOffset + frameSize * 3, frameSize);
+        ctx.lineTo(
+          width + arrowOffset - arrowSize + frameSize * 3,
+          arrowSize + frameSize
+        );
 
         // line
-        ctx.moveTo(width + arrowOffset, 0);
-        ctx.lineTo(width + arrowOffset, height);
+        ctx.moveTo(width + arrowOffset + frameSize * 3, frameSize);
+        ctx.lineTo(width + arrowOffset + frameSize * 3, height + frameSize);
 
         // bottom pointer
-        ctx.moveTo(width + arrowOffset + arrowSize, height - arrowSize);
-        ctx.lineTo(width + arrowOffset, height);
-        ctx.lineTo(width + arrowOffset - arrowSize, height - arrowSize);
+        ctx.moveTo(
+          width + arrowOffset + arrowSize + frameSize * 3,
+          height - arrowSize + frameSize
+        );
+        ctx.lineTo(width + arrowOffset + frameSize * 3, height + frameSize);
+        ctx.lineTo(
+          width + arrowOffset - arrowSize + frameSize * 3,
+          height - arrowSize + frameSize
+        );
 
         ctx.strokeShape(shape);
       }}
@@ -39,7 +53,7 @@ const FrameDimentions = ({
     <Shape
       sceneFunc={(ctx, shape) => {
         // top pointer
-        ctx.translate(0, height + arrowOffset);
+        ctx.translate(frameSize, height + arrowOffset + frameSize * 2);
         ctx.moveTo(arrowSize, -arrowSize);
         ctx.lineTo(0, 0);
         ctx.lineTo(arrowSize, arrowSize);
@@ -62,14 +76,14 @@ const FrameDimentions = ({
   );
 
   const LabelWidth = () => (
-    <Label x={width / 2} y={height + arrowOffset - arrowSize}>
+    <Label x={width / 2} y={height + arrowOffset - arrowSize + frameSize * 2}>
       <Tag fill="white" stroke="gray" />
       <Text text={`${width} in`} padding={2} fill="black" />
     </Label>
   );
 
   const LabelHight = () => (
-    <Label x={width + arrowOffset} y={height / 2}>
+    <Label x={width + arrowOffset + frameSize * 2} y={height / 2}>
       <Tag fill="white" stroke="gray" />
       <Text text={`${height} in`} padding={2} fill="black" />
     </Label>
