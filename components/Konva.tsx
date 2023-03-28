@@ -21,10 +21,12 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
   //create a reference to a konva stage with type definition
   const canvasRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useReducer(planterReducer, defaultState);
-  const [mouse, setMouse] = useState<Mouse>({ x: 0, y: 0 });
-  let frameSize = 12;
+  const [cursorBlock, setCursorBlock] = useState<Mouse>({ x: 0, y: 0 });
+  const GRID_SIZE = 10;
+
+  let FRAME_SIZE = 12;
   if (state.height < 50 || state.width < 50)
-    frameSize = Math.min(state.height, state.width) / 4;
+    FRAME_SIZE = Math.min(state.height, state.width) / 4;
 
   type Mouse = {
     x: number;
@@ -32,15 +34,11 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
   };
 
   const drawShape = (e: KonvaEventObject<MouseEvent>) => {
-    const location = stagePositionFromMouse({
-      x: e.evt.clientX,
-      y: e.evt.clientY,
-    });
     dispatch({
       type: ACTIONS.ADD_PLANT,
       payload: {
-        x: location.x - selectedPlant.size / 2, //center the plant
-        y: location.y - selectedPlant.size / 2, //center the plant
+        x: cursorBlock.x,
+        y: cursorBlock.y,
         type: selectedPlant.label,
         color: selectedPlant.color,
         size: selectedPlant.size,
@@ -72,7 +70,21 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
       x: e.evt.clientX,
       y: e.evt.clientY,
     });
-    setMouse({ x: location.x, y: location.y });
+
+    const x =
+      Math.round(
+        (location.x - selectedPlant.size / 2 - FRAME_SIZE) / GRID_SIZE
+      ) *
+        GRID_SIZE +
+      FRAME_SIZE; //top left of block
+    const y =
+      Math.round(
+        (location.y - selectedPlant.size / 2 - FRAME_SIZE) / GRID_SIZE
+      ) *
+        GRID_SIZE +
+      FRAME_SIZE;
+
+    setCursorBlock({ x, y });
   };
 
   const stagePositionFromMouse = ({ x, y }: { x: number; y: number }) => {
@@ -152,12 +164,12 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
             <PlanterFrame
               height={state.height}
               width={state.width}
-              frameSize={frameSize}
+              frameSize={FRAME_SIZE}
             />
             <FrameDimentions
               height={state.height}
               width={state.width}
-              frameSize={frameSize}
+              frameSize={FRAME_SIZE}
             />
             {state.plants.map((s: ShapeType) => (
               <Rect
@@ -183,15 +195,15 @@ const KonvaCanvas = ({ selectedPlant }: { selectedPlant: Plant }) => {
               stroke="black"
               fill={selectedPlant.color}
               opacity={0.5}
-              x={mouse.x - selectedPlant.size / 2}
-              y={mouse.y - selectedPlant.size / 2}
+              x={cursorBlock.x}
+              y={cursorBlock.y}
             />
           </Layer>
           <Layer //Cursor layer. Keeps the plant preview in the planter
             width={state.width}
             height={state.height}
-            y={frameSize + selectedPlant.size / 2}
-            x={frameSize + selectedPlant.size / 2}
+            y={FRAME_SIZE + selectedPlant.size / 2}
+            x={FRAME_SIZE + selectedPlant.size / 2}
             onMouseMove={handleMouseMove}
           >
             <Rect
