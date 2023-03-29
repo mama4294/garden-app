@@ -2,7 +2,7 @@ export enum ACTIONS {
   ADD_PLANT = "ADD_PLANT",
   MOVES_PLANT = "MOVES_PLANT",
   DELETED_SELECTED = "DELETED_SELECTED",
-  SELECT_PLANT = "SELECT_PLANT",
+  TOGGLE_SELECTION = "TOGGLE_SELECTION",
   UNSELECT_PLANT = "UNSELECT_PLANT",
   CHANGE_PLANTER_WIDTH = "CHANGE_PLANTER_WIDTH",
   CHANGE_PLANTER_HEIGHT = "CHANGE_PLANTER_HEIGHT",
@@ -23,7 +23,7 @@ type Action =
       type: ACTIONS.CLEAR | ACTIONS.DELETED_SELECTED;
     }
   | {
-      type: ACTIONS.SELECT_PLANT;
+      type: ACTIONS.TOGGLE_SELECTION;
       payload: { id: string };
     }
   | {
@@ -67,10 +67,10 @@ export const planterReducer = (state: State, action: Action) => {
       return { ...state, plants: [...state.plants, { ...action.payload }] };
     case ACTIONS.MOVES_PLANT:
       return state;
-    case ACTIONS.SELECT_PLANT:
+    case ACTIONS.TOGGLE_SELECTION:
       const newPlants = state.plants.map((plant: Shape) => {
         if (plant.id === action.payload.id) {
-          return { ...plant, selected: true };
+          return { ...plant, selected: !plant.selected };
         }
         return plant;
       });

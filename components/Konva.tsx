@@ -80,11 +80,11 @@ const KonvaCanvas = ({
     };
   }, []);
 
-  const selectShape = (e: KonvaEventObject<MouseEvent>) => {
+  const toggleSelection = (e: KonvaEventObject<MouseEvent>) => {
     const id = e.currentTarget.id();
     if (!id) return;
     dispatch({
-      type: ACTIONS.SELECT_PLANT,
+      type: ACTIONS.TOGGLE_SELECTION,
       payload: {
         id,
       },
@@ -229,7 +229,7 @@ const KonvaCanvas = ({
                 strokeWidth={s.selected ? 3 : 1}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
-                onClick={selectShape}
+                onClick={toggleSelection}
               />
             ))}
             {/* Cursor */}
