@@ -47,18 +47,20 @@ const KonvaCanvas = ({
   const handleClick = (e: KonvaEventObject<MouseEvent>) => {
     switch (mode) {
       case MODE.ADD:
-        dispatch({
-          type: ACTIONS.ADD_PLANT,
-          payload: {
-            x: cursorBlock.x,
-            y: cursorBlock.y,
-            type: selectedPlant.label,
-            color: selectedPlant.color,
-            size: selectedPlant.size,
-            id: newID(),
-            selected: false,
-          },
-        });
+        if (isMouseInFrame) {
+          dispatch({
+            type: ACTIONS.ADD_PLANT,
+            payload: {
+              x: cursorBlock.x,
+              y: cursorBlock.y,
+              type: selectedPlant.label,
+              color: selectedPlant.color,
+              size: selectedPlant.size,
+              id: newID(),
+              selected: false,
+            },
+          });
+        }
     }
   };
 
@@ -146,6 +148,18 @@ const KonvaCanvas = ({
     height: 300,
     scale: 1,
   });
+
+  const locInFrame = (x: number, y: number) => {
+    if (x < FRAME_SIZE || y < FRAME_SIZE) return false;
+    if (
+      x > state.width + FRAME_SIZE - selectedPlant.size ||
+      y > state.height + FRAME_SIZE - selectedPlant.size
+    )
+      return false;
+    return true;
+  };
+
+  const isMouseInFrame = locInFrame(cursorBlock.x, cursorBlock.y);
 
   useEffect(() => {
     const handleResize = () => {
@@ -243,7 +257,7 @@ const KonvaCanvas = ({
                 width={selectedPlant.size}
                 height={selectedPlant.size}
                 stroke="black"
-                fill={selectedPlant.color}
+                fill={isMouseInFrame ? selectedPlant.color : "gray"}
                 opacity={0.5}
                 x={cursorBlock.x}
                 y={cursorBlock.y}
