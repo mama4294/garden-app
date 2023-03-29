@@ -70,6 +70,11 @@ const KonvaCanvas = ({
         dispatch({
           type: ACTIONS.DELETED_SELECTED,
         });
+      } else if (event.key == "Escape") {
+        console.log("deselecting");
+        dispatch({
+          type: ACTIONS.DESELECT_ALL,
+        });
       }
     }
 
