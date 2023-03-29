@@ -42,8 +42,8 @@ const KonvaCanvas = ({
   const canvasRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useReducer(planterReducer, defaultState);
   const [cursorBlock, setCursorBlock] = useState<Mouse>({ x: 0, y: 0 });
-  const [quadtree, setQuadtree] = useState<Quadtree<Taco>>(
-    new Quadtree({ width: state.width, height: state.width })
+  const [quadtree] = useState<Quadtree<Taco>>(
+    new Quadtree({ width: state.width, height: state.height })
   );
 
   //todo: remove from quadtree when deleted
@@ -61,18 +61,22 @@ const KonvaCanvas = ({
 
   useEffect(() => {
     console.log(quadtree);
-  }, [quadtree]);
+    quadtree.clear();
+    const shapes = state.plants.map((plant) => {
+      return {
+        x: plant.x,
+        y: plant.y,
+        width: plant.size,
+        height: plant.size,
+      };
+    });
+    quadtree.pushAll(shapes);
+  }, [state.plants]);
 
   const handleClick = (e: KonvaEventObject<MouseEvent>) => {
     switch (mode) {
       case MODE.ADD:
-        if (isAcceptable) {
-          quadtree.push({
-            x: cursorBlock.x,
-            y: cursorBlock.y,
-            width: selectedPlant.size,
-            height: selectedPlant.size,
-          });
+        if (isValidPosition) {
           dispatch({
             type: ACTIONS.ADD_PLANT,
             payload: {
@@ -92,7 +96,7 @@ const KonvaCanvas = ({
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key == "Delete" || event.key == "Backspace") {
-        console.log("deleting");
+        console.log("deleting selected");
         dispatch({
           type: ACTIONS.DELETED_SELECTED,
         });
@@ -190,7 +194,7 @@ const KonvaCanvas = ({
       width: selectedPlant.size,
       height: selectedPlant.size,
     }).length > 0;
-  const isAcceptable = isMouseInFrame && !isColliding;
+  const isValidPosition = isMouseInFrame && !isColliding;
 
   useEffect(() => {
     const handleResize = () => {
@@ -285,7 +289,7 @@ const KonvaCanvas = ({
                 width={selectedPlant.size}
                 height={selectedPlant.size}
                 stroke="black"
-                fill={isAcceptable ? selectedPlant.color : "gray"}
+                fill={isValidPosition ? selectedPlant.color : "gray"}
                 opacity={0.5}
                 x={cursorBlock.x}
                 y={cursorBlock.y}
