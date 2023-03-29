@@ -1,5 +1,6 @@
 "use client";
 import { KonvaEventObject } from "konva/lib/Node";
+import Quadtree from "quadtree-lib";
 import { ChangeEvent, useEffect, useReducer, useRef, useState } from "react";
 import { Stage, Layer, Rect } from "react-konva";
 import { MODE } from "../app/edit/page";
@@ -7,6 +8,7 @@ import {
   ACTIONS,
   defaultState,
   planterReducer,
+  Shape,
   Shape as ShapeType,
 } from "../app/reducers/planterReducer";
 import { Plant } from "../typings";
@@ -29,10 +31,23 @@ const KonvaCanvas = ({
     return Math.floor(Math.random() * 100).toString();
   };
 
+  type Taco = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+
   //create a reference to a konva stage with type definition
   const canvasRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useReducer(planterReducer, defaultState);
   const [cursorBlock, setCursorBlock] = useState<Mouse>({ x: 0, y: 0 });
+  const [quadtree, setQuadtree] = useState<Quadtree<Taco>>(
+    new Quadtree({ width: state.width, height: state.width })
+  );
+
+  //todo: remove from quadtree when deleted
+
   const GRID_SIZE = 10;
 
   let FRAME_SIZE = 12;
@@ -44,10 +59,20 @@ const KonvaCanvas = ({
     y: number;
   };
 
+  useEffect(() => {
+    console.log(quadtree);
+  }, [quadtree]);
+
   const handleClick = (e: KonvaEventObject<MouseEvent>) => {
     switch (mode) {
       case MODE.ADD:
-        if (isMouseInFrame) {
+        if (isAcceptable) {
+          quadtree.push({
+            x: cursorBlock.x,
+            y: cursorBlock.y,
+            width: selectedPlant.size,
+            height: selectedPlant.size,
+          });
           dispatch({
             type: ACTIONS.ADD_PLANT,
             payload: {
@@ -66,14 +91,12 @@ const KonvaCanvas = ({
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      console.log("keydown", event.key);
       if (event.key == "Delete" || event.key == "Backspace") {
         console.log("deleting");
         dispatch({
           type: ACTIONS.DELETED_SELECTED,
         });
       } else if (event.key == "Escape") {
-        console.log("deselecting");
         dispatch({
           type: ACTIONS.DESELECT_ALL,
         });
@@ -160,15 +183,20 @@ const KonvaCanvas = ({
   };
 
   const isMouseInFrame = locInFrame(cursorBlock.x, cursorBlock.y);
+  const isColliding =
+    quadtree.colliding({
+      x: cursorBlock.x,
+      y: cursorBlock.y,
+      width: selectedPlant.size,
+      height: selectedPlant.size,
+    }).length > 0;
+  const isAcceptable = isMouseInFrame && !isColliding;
 
   useEffect(() => {
     const handleResize = () => {
       const width = canvasRef!.current!.offsetWidth;
       const height = canvasRef!.current!.offsetHeight;
       const scale = Math.min(width / state.width, height / state.height) * 0.8;
-
-      console.table({ width, height, scale });
-      console.table(state);
       setCanvasSize({
         width,
         height,
@@ -182,7 +210,7 @@ const KonvaCanvas = ({
 
   return (
     <>
-      <div className="p-2">
+      {/* <div className="p-2">
         <div className="form-control w-full max-w-xs">
           <label className="label">
             <span className="label-text">Frame Width</span>
@@ -213,7 +241,7 @@ const KonvaCanvas = ({
             }
           />
         </div>
-      </div>
+      </div> */}
       <div className="h-full w-full " ref={canvasRef}>
         <Stage
           width={canvasSize.width}
@@ -257,27 +285,13 @@ const KonvaCanvas = ({
                 width={selectedPlant.size}
                 height={selectedPlant.size}
                 stroke="black"
-                fill={isMouseInFrame ? selectedPlant.color : "gray"}
+                fill={isAcceptable ? selectedPlant.color : "gray"}
                 opacity={0.5}
                 x={cursorBlock.x}
                 y={cursorBlock.y}
               />
             )}
           </Layer>
-          {/* <Layer //Cursor layer. Keeps the plant preview in the planter
-            width={state.width}
-            height={state.height}
-            y={FRAME_SIZE + selectedPlant.size / 2}
-            x={FRAME_SIZE + selectedPlant.size / 2}
-            onMouseMove={handleMouseMove}
-          >
-            <Rect
-              width={state.width}
-              height={state.height}
-              fill="white"
-              opacity={0}
-            />
-          </Layer> */}
         </Stage>
       </div>
     </>
