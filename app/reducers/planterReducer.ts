@@ -1,6 +1,6 @@
 export enum ACTIONS {
   ADD_PLANT = "ADD_PLANT",
-  MOVES_PLANT = "MOVES_PLANT",
+  MOVE_PLANT = "MOVE_PLANT",
   DELETED_SELECTED = "DELETED_SELECTED",
   TOGGLE_SELECTION = "TOGGLE_SELECTION",
   DESELECT_ALL = "DESELECT_ALL",
@@ -27,7 +27,7 @@ type Action =
       payload: { id: string };
     }
   | {
-      type: ACTIONS.MOVES_PLANT;
+      type: ACTIONS.MOVE_PLANT;
       payload: {
         x: number;
         y: number;
@@ -65,8 +65,16 @@ export const planterReducer = (state: State, action: Action) => {
       return { ...state, width: action.payload };
     case ACTIONS.ADD_PLANT:
       return { ...state, plants: [...state.plants, { ...action.payload }] };
-    case ACTIONS.MOVES_PLANT:
-      return state;
+    case ACTIONS.MOVE_PLANT:
+      const plant = state.plants.find((plant) => plant.id == action.payload.id);
+      if (!plant) return state;
+      return {
+        ...state,
+        plants: [
+          ...state.plants,
+          { ...plant, x: action.payload.x, y: action.payload.y },
+        ],
+      };
     case ACTIONS.TOGGLE_SELECTION:
       const newPlants = state.plants.map((plant: Shape) => {
         if (plant.id === action.payload.id) {

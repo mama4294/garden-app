@@ -28,7 +28,7 @@ const KonvaCanvas = ({
 }) => {
   const newID = () => {
     //creates new id
-    return Math.floor(Math.random() * 100).toString();
+    return Math.floor(Math.random() * 1000).toString();
   };
 
   type Taco = {
@@ -38,27 +38,24 @@ const KonvaCanvas = ({
     height: number;
   };
 
-  //create a reference to a konva stage with type definition
   const canvasRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useReducer(planterReducer, defaultState);
   const [cursorBlock, setCursorBlock] = useState<Mouse>({ x: 0, y: 0 });
   const [quadtree] = useState<Quadtree<Taco>>(
     new Quadtree({ width: state.width, height: state.height })
-  );
-
-  //todo: remove from quadtree when deleted
+  ); //used to store location data of plants for collision detection
 
   const GRID_SIZE = 10;
-
-  let FRAME_SIZE = 12;
+  let frameSize = 12;
   if (state.height < 50 || state.width < 50)
-    FRAME_SIZE = Math.min(state.height, state.width) / 4;
+    frameSize = Math.min(state.height, state.width) / 4;
 
   type Mouse = {
     x: number;
     y: number;
   };
 
+  //Updates quadtree when plants are added or removed
   useEffect(() => {
     console.log(quadtree);
     quadtree.clear();
@@ -126,19 +123,49 @@ const KonvaCanvas = ({
   };
 
   const handleDragStart = (e: KonvaEventObject<DragEvent>) => {
-    console.log("dragging");
+    const id = e.target.id();
+    if (!id) return;
+    //find the plant in the state
+    const plant = state.plants.find((plant) => plant.id == id);
+    if (!plant) return;
   };
 
   const handleDragEnd = (e: KonvaEventObject<DragEvent>) => {
     console.log("end drag");
-    dispatch({
-      type: ACTIONS.MOVES_PLANT,
-      payload: {
-        x: e.evt.offsetX,
-        y: e.evt.offsetY,
-        id: e.target.id(),
-      },
+    const loc = snap({ x: e.target.x(), y: e.target.y() });
+    const id = e.target.id();
+    const size = state.plants.find((plant) => plant.id == id)?.size;
+
+    const inFrame = locInFrame(loc);
+    const collisions = quadtree.colliding({
+      x: loc.x,
+      y: loc.y,
+      width: size,
+      height: size,
     });
+
+    if (inFrame && collisions.length == 0) {
+      // dispatch({
+      //   type: ACTIONS.MOVE_PLANT,
+      //   payload: { id, x: loc.x, y: loc.y },
+      // });
+      console.log("VALID location");
+      dispatch({
+        type: ACTIONS.ADD_PLANT,
+        payload: {
+          x: e.target.x(),
+          y: e.target.y(),
+          type: "test",
+          color: "purple",
+          size: 4,
+          id: newID(),
+          selected: false,
+        },
+      });
+    } else {
+      console.log("not valid location");
+      console.log(collisions);
+    }
   };
 
   const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
@@ -147,20 +174,20 @@ const KonvaCanvas = ({
       y: e.evt.clientY,
     });
 
-    const x =
-      Math.round(
-        (location.x - selectedPlant.size / 2 - FRAME_SIZE) / GRID_SIZE
-      ) *
-        GRID_SIZE +
-      FRAME_SIZE; //top left of block
-    const y =
-      Math.round(
-        (location.y - selectedPlant.size / 2 - FRAME_SIZE) / GRID_SIZE
-      ) *
-        GRID_SIZE +
-      FRAME_SIZE;
+    const snappedLoc = snap(location);
+    setCursorBlock(snappedLoc);
+  };
 
-    setCursorBlock({ x, y });
+  const snap = ({ x, y }: Mouse): Mouse => {
+    const snapX =
+      Math.round((x - selectedPlant.size / 2 - frameSize) / GRID_SIZE) *
+        GRID_SIZE +
+      frameSize;
+    const snapY =
+      Math.round((y - selectedPlant.size / 2 - frameSize) / GRID_SIZE) *
+        GRID_SIZE +
+      frameSize;
+    return { x: snapX, y: snapY };
   };
 
   const stagePositionFromMouse = ({ x, y }: { x: number; y: number }) => {
@@ -176,17 +203,17 @@ const KonvaCanvas = ({
     scale: 1,
   });
 
-  const locInFrame = (x: number, y: number) => {
-    if (x < FRAME_SIZE || y < FRAME_SIZE) return false;
+  const locInFrame = ({ x, y }: { x: number; y: number }) => {
+    if (x < frameSize || y < frameSize) return false;
     if (
-      x > state.width + FRAME_SIZE - selectedPlant.size ||
-      y > state.height + FRAME_SIZE - selectedPlant.size
+      x > state.width + frameSize - selectedPlant.size ||
+      y > state.height + frameSize - selectedPlant.size
     )
       return false;
     return true;
   };
 
-  const isMouseInFrame = locInFrame(cursorBlock.x, cursorBlock.y);
+  const isMouseInFrame = locInFrame(cursorBlock);
   const isColliding =
     quadtree.colliding({
       x: cursorBlock.x,
@@ -259,12 +286,12 @@ const KonvaCanvas = ({
             <PlanterFrame
               height={state.height}
               width={state.width}
-              frameSize={FRAME_SIZE}
+              frameSize={frameSize}
             />
             <FrameDimentions
               height={state.height}
               width={state.width}
-              frameSize={FRAME_SIZE}
+              frameSize={frameSize}
             />
             {state.plants.map((s: ShapeType) => (
               <Rect
