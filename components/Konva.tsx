@@ -21,9 +21,11 @@ interface KeyboardEvent {
 const KonvaCanvas = ({
   selectedPlant,
   mode,
+  showDimentions,
 }: {
   selectedPlant: Plant;
   mode: MODE;
+  showDimentions: boolean;
 }) => {
   const newID = () => {
     //creates new id
@@ -239,6 +241,21 @@ const KonvaCanvas = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [state]);
 
+  //Find colors
+  let frameColor = canvasRef.current
+    ? window.getComputedStyle(canvasRef.current).stroke
+    : "gray";
+  let fillColor = canvasRef.current
+    ? window.getComputedStyle(canvasRef.current).fill
+    : "blue";
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      frameColor = window.getComputedStyle(canvasRef.current).stroke;
+      fillColor = window.getComputedStyle(canvasRef.current).fill;
+    }
+  }, []);
+
   return (
     <>
       {/* <div className="p-2">
@@ -273,7 +290,10 @@ const KonvaCanvas = ({
           />
         </div>
       </div> */}
-      <div className="h-full w-full " ref={canvasRef}>
+      <div
+        className="h-full w-full fill-primary stroke-base-300"
+        ref={canvasRef}
+      >
         <Stage
           width={canvasSize.width}
           height={canvasSize.height}
@@ -287,12 +307,16 @@ const KonvaCanvas = ({
               height={state.height}
               width={state.width}
               frameSize={frameSize}
+              fillColor={fillColor}
+              frameColor={frameColor}
             />
-            <FrameDimentions
-              height={state.height}
-              width={state.width}
-              frameSize={frameSize}
-            />
+            {showDimentions && (
+              <FrameDimentions
+                height={state.height}
+                width={state.width}
+                frameSize={frameSize}
+              />
+            )}
             {state.plants.map((s: ShapeType) => (
               <Rect
                 key={s.id}

@@ -6,13 +6,17 @@ const PlanterFrame = ({
   width,
   height,
   frameSize,
+  frameColor,
+  fillColor,
 }: {
   width: number;
   height: number;
   frameSize: number;
+  frameColor: string;
+  fillColor: string;
 }) => {
-  const frameColor = "white";
-  const fillColor = "lightgreen";
+  // const frameColor = "green";
+  // const fillColor = "gray";
 
   const FrameTop = () => (
     <Line // Top Frame
