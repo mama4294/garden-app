@@ -26,8 +26,10 @@ function EditPage() {
 
   const [selectedPlant, setSelectedPlant] = useState<Plant>(options[0]);
   const [showDimentions, setShowDimentions] = useState<boolean>(false);
+  const [mode, setMode] = useState(MODE.ADD);
 
   const changeSelectedPlant = (e: SingleValue<Plant>) => {
+    setMode(MODE.ADD);
     setSelectedPlant({
       value: e!.value,
       label: e!.label,
@@ -35,8 +37,6 @@ function EditPage() {
       color: e!.color,
     });
   };
-
-  const [mode, setMode] = useState(MODE.ADD);
 
   return (
     <div className="flex flex-col gap-4 m-4 md:flex-row">

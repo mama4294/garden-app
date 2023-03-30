@@ -290,10 +290,7 @@ const KonvaCanvas = ({
           />
         </div>
       </div> */}
-      <div
-        className="h-full w-full fill-primary stroke-base-300"
-        ref={canvasRef}
-      >
+      <div className="h-full w-full fill-primary stroke-accent" ref={canvasRef}>
         <Stage
           width={canvasSize.width}
           height={canvasSize.height}
