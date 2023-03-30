@@ -2,13 +2,12 @@
 import { KonvaEventObject } from "konva/lib/Node";
 import Quadtree from "quadtree-lib";
 import { ChangeEvent, useEffect, useReducer, useRef, useState } from "react";
-import { Stage, Layer, Rect } from "react-konva";
+import { Stage, Layer, Rect, Text, Tag, Label } from "react-konva";
 import { MODE } from "../app/edit/page";
 import {
   ACTIONS,
   defaultState,
   planterReducer,
-  Shape,
   Shape as ShapeType,
 } from "../app/reducers/planterReducer";
 import { Plant } from "../typings";
@@ -44,6 +43,7 @@ const KonvaCanvas = ({
   const [quadtree] = useState<Quadtree<Taco>>(
     new Quadtree({ width: state.width, height: state.height })
   ); //used to store location data of plants for collision detection
+  const [hoveredPlant, setHoveredPlant] = useState<ShapeType | null>(null);
 
   const GRID_SIZE = 10;
   let frameSize = 12;
@@ -308,6 +308,8 @@ const KonvaCanvas = ({
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 onClick={toggleSelection}
+                onMouseEnter={() => setHoveredPlant(s)}
+                onMouseLeave={() => setHoveredPlant(null)}
               />
             ))}
             {/* Cursor */}
@@ -321,6 +323,22 @@ const KonvaCanvas = ({
                 x={cursorBlock.x}
                 y={cursorBlock.y}
               />
+            )}
+          </Layer>
+          {/* Tooltip */}
+          <Layer>
+            {hoveredPlant && mode == MODE.SELECT && (
+              <Label
+                x={hoveredPlant.x + hoveredPlant.size / 2}
+                y={hoveredPlant.y + hoveredPlant.size / 2}
+              >
+                <Tag fill="white" cornerRadius={5} />
+                <Text
+                  text={`${hoveredPlant.type} x:${hoveredPlant.y} y:${hoveredPlant.y}`}
+                  padding={10}
+                  fill="black"
+                />
+              </Label>
             )}
           </Layer>
         </Stage>
