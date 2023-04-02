@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Cog6ToothIcon,
-  CursorArrowRaysIcon,
-  PlusIcon,
-  TrashIcon,
-} from "@heroicons/react/24/solid";
+import { Cog6ToothIcon, CursorArrowRaysIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import Select, { SingleValue } from "react-select";
 import Konva from "../../components/Konva";
@@ -16,16 +11,33 @@ export enum MODE {
   ADD = "ADD",
 }
 
+type PlantGroup = {
+  label: string;
+  options: Plant[];
+};
+
 function EditPage() {
-  const options: Plant[] = [
-    { value: "Tomato", label: "Tomato", color: "red", size: 10 },
-    { value: "Basil", label: "Basil", color: "green", size: 40 },
-    { value: "Lettuce", label: "Lettuce", color: "green", size: 20 },
-    { value: "Cucumber", label: "Cucumber", color: "green", size: 12 },
-    { value: "Sunflower", label: "Sunflower", color: "yellow", size: 50 },
+  const options: PlantGroup[] = [
+    {
+      label: "Fruits",
+      options: [
+        { value: "Tomato", label: "Tomato", color: "red", size: 10 },
+        { value: "Basil", label: "Basil", color: "green", size: 40 },
+      ],
+    },
+    {
+      label: "Vegetables",
+      options: [
+        { value: "Lettuce", label: "Lettuce", color: "green", size: 20 },
+        { value: "Cucumber", label: "Cucumber", color: "green", size: 12 },
+        { value: "Sunflower", label: "Sunflower", color: "yellow", size: 50 },
+      ],
+    },
   ];
 
-  const [selectedPlant, setSelectedPlant] = useState<Plant>(options[0]);
+  const [selectedPlant, setSelectedPlant] = useState<Plant>(
+    options[0].options[0]
+  );
   const [showDimentions, setShowDimentions] = useState<boolean>(true);
   const [mode, setMode] = useState(MODE.ADD);
 
@@ -44,7 +56,6 @@ function EditPage() {
       control: (provided: any, state: any) => ({
         ...provided,
         backgroundColor: mode == MODE.ADD ? `hsl(var(--p))` : "inherit",
-
         // "&:hover": {
         //   backgroundColor: `hsl(var(--bc)`,
         // },
@@ -53,6 +64,12 @@ function EditPage() {
         ...provided,
         color: mode == MODE.ADD ? `hsl(var(--pc))` : "",
       }),
+      // groupHeading: (provided: any) => ({
+      //   ...provided,
+      //   flex: "1 1",
+      //   color: "green",
+      //   margin: 0,
+      // }),
     };
 
     return (
@@ -72,6 +89,7 @@ function EditPage() {
             onChange={changeSelectedPlant}
             value={selectedPlant}
             styles={customSelectStyles}
+            isSearchable={true}
           />
         </div>
         <div className="flex items-center gap-2">
