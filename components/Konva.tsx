@@ -320,7 +320,7 @@ const KonvaCanvas = ({
                 id={s.id}
                 x={s.x}
                 y={s.y}
-                draggable
+                // draggable
                 width={s.size}
                 height={s.size}
                 stroke="black"
@@ -354,11 +354,7 @@ const KonvaCanvas = ({
                 y={hoveredPlant.y + hoveredPlant.size / 2}
               >
                 <Tag fill="white" cornerRadius={5} />
-                <Text
-                  text={`${hoveredPlant.type} x:${hoveredPlant.y} y:${hoveredPlant.y}`}
-                  padding={10}
-                  fill="black"
-                />
+                <Text text={`${hoveredPlant.type}`} padding={10} fill="black" />
               </Label>
             )}
           </Layer>
