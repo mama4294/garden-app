@@ -9,6 +9,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useReducer, useState } from "react";
 import { Planter } from "../../typings";
+import NewPlanterModal from "./NewPlanterModal";
 
 export const PlanterList = () => {
   const initialState: Planter[] = [
@@ -85,13 +86,7 @@ export const PlanterList = () => {
 
   return (
     <div className="flex flex-col gap-2 m-4">
-      <button
-        className="btn btn-primary  gap-2 flex-nowrap  "
-        onClick={handleNewPlanter}
-      >
-        <PlusCircleIcon className="h-8 w-8" />
-        Design New Planter
-      </button>
+      <NewPlanterModal />
       <div className=" flex flex-col gap-4 overflow-y-auto">
         {state.map((planter) => (
           <PlanterItem key={planter.id} data={planter} />

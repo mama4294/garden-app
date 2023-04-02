@@ -10,7 +10,7 @@ export default function RootLayout({
       <div className="border-r-base-300 border-2">
         <PlanterList />
       </div>
-      <div className="flex-1">{children}</div>
+      <div className="flex-1 overflow-hidden">{children}</div>
     </main>
   );
 }
