@@ -1,6 +1,7 @@
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import React from "react";
+import PlanterPreview from "../../components/PreviewPlanter";
 
 const NewPlanterModal = () => {
   const [state, setState] = React.useState({
@@ -68,6 +69,7 @@ const NewPlanterModal = () => {
               </label>
             </div>
           </div>
+          <PlanterPreview {...state} />
           <div className="flex justify-between">
             <label
               htmlFor="new-planter-modal"
