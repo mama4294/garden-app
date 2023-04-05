@@ -1,11 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Stage, Layer } from "react-konva";
+import { DIMENTION_MULTIPLIER } from "../app/constants";
 import PlanterFrame from "./PlanterFrame";
-
-interface KeyboardEvent {
-  key: string;
-}
 
 const PlanterPreview = ({
   width: inputWidth,
@@ -16,9 +13,12 @@ const PlanterPreview = ({
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
 
+  const frameWidth = inputWidth * DIMENTION_MULTIPLIER;
+  const frameHeight = inputHeight * DIMENTION_MULTIPLIER;
+
   let frameSize = 12;
-  if (inputHeight < 50 || inputWidth < 50)
-    frameSize = Math.min(inputHeight, inputWidth) / 4;
+  if (frameHeight < 50 || frameWidth < 50)
+    frameSize = Math.min(frameHeight, frameWidth) / 4;
 
   const [canvasSize, setCanvasSize] = useState({
     width: 300,
@@ -28,19 +28,20 @@ const PlanterPreview = ({
 
   useEffect(() => {
     const handleResize = () => {
-      const width = canvasRef!.current!.offsetWidth;
-      const height = canvasRef!.current!.offsetHeight;
-      const scale = Math.min(width / inputWidth, height / inputHeight) * 0.8;
+      const width = canvasRef!.current!.clientWidth;
+      const height = canvasRef!.current!.clientHeight;
+      const scale = Math.min(width / frameWidth, height / frameHeight) * 0.8;
       setCanvasSize({
-        width,
-        height,
+        width: width,
+        height: height,
         scale,
       });
     };
     handleResize();
+    console.table(canvasSize);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [inputHeight, inputWidth]);
+  }, [frameHeight, frameWidth]);
 
   //Find colors
   let frameColor = canvasRef.current
@@ -57,9 +58,35 @@ const PlanterPreview = ({
     }
   }, []);
 
+  function getFramePosition(
+    planterWidth: number,
+    planterHeight: number,
+    stageWidth: number,
+    stageHeight: number
+  ) {
+    const x = stageWidth / 2 - planterWidth / 2;
+    const y = stageHeight / 2 - planterHeight / 2;
+    return { x, y };
+  }
+
+  const framePosition = getFramePosition(
+    frameWidth,
+    frameHeight,
+    canvasSize.width,
+    canvasSize.height
+  );
+
   return (
     <>
       <div className="h-full w-full fill-primary stroke-accent" ref={canvasRef}>
+        <p>
+          Canvas height: {canvasSize.height} width: {canvasSize.width} scale:{" "}
+          {canvasSize.scale}{" "}
+        </p>
+        <p>
+          Frame x: {framePosition.x} y: {framePosition.y}{" "}
+        </p>
+
         <Stage
           width={canvasSize.width}
           height={canvasSize.height}
@@ -68,8 +95,10 @@ const PlanterPreview = ({
         >
           <Layer>
             <PlanterFrame
-              height={inputHeight}
-              width={inputWidth}
+              x={framePosition.x}
+              y={framePosition.y}
+              height={frameHeight}
+              width={frameWidth}
               frameSize={frameSize}
               fillColor={fillColor}
               frameColor={frameColor}
