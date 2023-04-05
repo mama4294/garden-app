@@ -8,9 +8,13 @@ const PlanterFrame = ({
   frameSize,
   frameColor,
   fillColor,
+  x = 0,
+  y = 0,
 }: {
   width: number;
   height: number;
+  x?: number;
+  y?: number;
   frameSize: number;
   frameColor: string;
   fillColor: string;
@@ -107,7 +111,7 @@ const PlanterFrame = ({
   );
 
   return (
-    <Group>
+    <Group x={x} y={y}>
       <FrameTop />
       <FrameLeft />
       <FrameBottom />

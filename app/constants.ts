@@ -1,0 +1,1 @@
+export const DIMENTION_MULTIPLIER = 10;
