@@ -12,7 +12,6 @@ const PlanterPreview = ({
   height: number;
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
-
   const frameWidth = inputWidth * DIMENTION_MULTIPLIER;
   const frameHeight = inputHeight * DIMENTION_MULTIPLIER;
 
@@ -21,9 +20,9 @@ const PlanterPreview = ({
     frameSize = Math.min(frameHeight, frameWidth) / 4;
 
   const [canvasSize, setCanvasSize] = useState({
-    width: 300,
-    height: 300,
-    scale: 1,
+    width: 300, //changes
+    height: 200, //constant size
+    scale: 1, //changes
   });
 
   useEffect(() => {
@@ -31,14 +30,13 @@ const PlanterPreview = ({
       const width = canvasRef!.current!.clientWidth;
       const height = canvasRef!.current!.clientHeight;
       const scale = Math.min(width / frameWidth, height / frameHeight) * 0.8;
-      setCanvasSize({
+      setCanvasSize((prev) => ({
+        ...prev,
         width: width,
-        height: height,
         scale,
-      });
+      }));
     };
     handleResize();
-    console.table(canvasSize);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [frameHeight, frameWidth]);
@@ -58,34 +56,34 @@ const PlanterPreview = ({
     }
   }, []);
 
-  function getFramePosition(
-    planterWidth: number,
-    planterHeight: number,
-    stageWidth: number,
-    stageHeight: number
-  ) {
-    const x = stageWidth / 2 - planterWidth / 2;
-    const y = stageHeight / 2 - planterHeight / 2;
-    return { x, y };
-  }
+  // function getFramePosition(
+  //   planterWidth: number,
+  //   planterHeight: number,
+  //   stageWidth: number,
+  //   stageHeight: number
+  // ) {
+  //   const x = stageWidth / 2 - planterWidth / 2;
+  //   const y = 0;
+  //   return { x, y };
+  // }
 
-  const framePosition = getFramePosition(
-    frameWidth,
-    frameHeight,
-    canvasSize.width,
-    canvasSize.height
-  );
+  // const framePosition = getFramePosition(
+  //   frameWidth,
+  //   frameHeight,
+  //   canvasSize.width,
+  //   canvasSize.height
+  // );
 
   return (
     <>
       <div className="h-full w-full fill-primary stroke-accent" ref={canvasRef}>
-        <p>
+        {/* <p>
           Canvas height: {canvasSize.height} width: {canvasSize.width} scale:{" "}
           {canvasSize.scale}{" "}
         </p>
         <p>
-          Frame x: {framePosition.x} y: {framePosition.y}{" "}
-        </p>
+          Frame height: {frameHeight} width: {frameWidth}
+        </p> */}
 
         <Stage
           width={canvasSize.width}
@@ -95,8 +93,6 @@ const PlanterPreview = ({
         >
           <Layer>
             <PlanterFrame
-              x={framePosition.x}
-              y={framePosition.y}
               height={frameHeight}
               width={frameWidth}
               frameSize={frameSize}
