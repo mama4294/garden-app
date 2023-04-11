@@ -147,11 +147,6 @@ const KonvaCanvas = ({
     });
 
     if (inFrame && collisions.length == 0) {
-      // dispatch({
-      //   type: ACTIONS.MOVE_PLANT,
-      //   payload: { id, x: loc.x, y: loc.y },
-      // });
-      console.log("VALID location");
       dispatch({
         type: ACTIONS.ADD_PLANT,
         payload: {
@@ -258,38 +253,6 @@ const KonvaCanvas = ({
 
   return (
     <>
-      {/* <div className="p-2">
-        <div className="form-control w-full max-w-xs">
-          <label className="label">
-            <span className="label-text">Frame Width</span>
-          </label>
-          <input
-            value={state.width}
-            className="input input-bordered w-full"
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              dispatch({
-                type: ACTIONS.CHANGE_PLANTER_WIDTH,
-                payload: Number(e.target.value),
-              })
-            }
-          />
-        </div>
-        <div className="form-control w-full max-w-xs">
-          <label className="label">
-            <span className="label-text">Frame Height</span>
-          </label>
-          <input
-            value={state.height}
-            className="input input-bordered w-full"
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              dispatch({
-                type: ACTIONS.CHANGE_PLANTER_HEIGHT,
-                payload: Number(e.target.value),
-              })
-            }
-          />
-        </div>
-      </div> */}
       <div className="h-full w-full fill-primary stroke-accent" ref={canvasRef}>
         <Stage
           width={canvasSize.width}
@@ -350,10 +313,22 @@ const KonvaCanvas = ({
           <Layer>
             {hoveredPlant && mode == MODE.SELECT && (
               <Label
-                x={hoveredPlant.x + hoveredPlant.size / 2}
+                className="opacity-0 transition-opacity duration-300 bg-pink-50"
+                x={hoveredPlant.x + hoveredPlant.size}
                 y={hoveredPlant.y + hoveredPlant.size / 2}
               >
-                <Tag fill="white" cornerRadius={5} />
+                <Tag
+                  fill="white"
+                  cornerRadius={5}
+                  pointerDirection="left"
+                  pointerWidth={10}
+                  pointerHeight={10}
+                  shadowColor="black"
+                  shadowBlur={10}
+                  shadowOffsetX={10}
+                  shadowOffsetY={10}
+                  shadowOpacity={0.2}
+                />
                 <Text text={`${hoveredPlant.type}`} padding={10} fill="black" />
               </Label>
             )}
