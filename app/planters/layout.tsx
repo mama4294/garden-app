@@ -7,7 +7,7 @@ export default function RootLayout({
 }) {
   return (
     <main className="flex h-full">
-      <div className="border-r-base-300 border-2">
+      <div className="border-transparent border-r-base-300 border-2">
         <PlanterList />
       </div>
       <div className="flex-1 overflow-hidden">{children}</div>

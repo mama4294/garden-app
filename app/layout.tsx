@@ -1,7 +1,7 @@
 import "../styles/globals.css";
 import { Footer } from "./Footer";
 import { Navbar } from "./Navbar";
-import { authOptions } from "../pages/api/auth/[...nextAuth]";
+import { authOptions } from "../pages/api/auth/[...nextauth]";
 import { SessionProvider } from "../components/SessionProvider";
 import { getServerSession } from "next-auth";
 import HomePage from "../components/HomePage";
@@ -22,15 +22,9 @@ export default async function RootLayout({
     <html lang="en">
       <body className="h-screen flex flex-col">
         <SessionProvider session={session}>
-          {session ? (
-            <>
-              <Navbar />
-              <div className="flex-1">{children}</div>
-              <Footer />
-            </>
-          ) : (
-            <HomePage />
-          )}
+          <Navbar session={session} />
+          {session ? <div className="flex-1">{children}</div> : <HomePage />}
+          <Footer />
         </SessionProvider>
       </body>
     </html>
