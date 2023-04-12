@@ -128,7 +128,9 @@ export const Navbar = ({ session }: Props) => {
                     alt="Profile Picture"
                     className="h-6 w-6 rounded-full"
                   />
-                  <p>{signoutLoading ? "Signing Out...." : "Sign Out"}</p>
+                  <p className="text-base-content">
+                    {signoutLoading ? "Signing Out...." : "Sign Out"}
+                  </p>
                 </button>
               </li>
             </ul>

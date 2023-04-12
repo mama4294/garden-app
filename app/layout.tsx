@@ -23,7 +23,7 @@ export default async function RootLayout({
       <body className="h-screen flex flex-col">
         <SessionProvider session={session}>
           <Navbar session={session} />
-          {session ? <div className="flex-1">{children}</div> : <HomePage />}
+          <div className="flex-1">{children}</div>
           <Footer />
         </SessionProvider>
       </body>
