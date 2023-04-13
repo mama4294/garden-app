@@ -6,6 +6,7 @@ import { collection, orderBy, query } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useSession } from "next-auth/react";
 import { PlanterItem } from "./PlanterItem";
+import Loading from "../../components/Loading";
 
 export const PlanterList = () => {
   const { data: session } = useSession();
@@ -21,15 +22,18 @@ export const PlanterList = () => {
   return (
     <div className="flex flex-col gap-2 m-4">
       <NewPlanterModal />
-      <div className=" flex flex-col gap-4 overflow-y-auto">
-        {planters?.docs.map((planter) => (
-          <PlanterItem key={planter.id} id={planter.id} />
-        ))}
 
-        {/* {planters?.docs.map((planter) => (
-          <PlanterItem key={planter.id} data={planter.name} />
-        ))} */}
-      </div>
+      {loading ? (
+        <div className="flex justify-center">
+          <Loading />
+        </div>
+      ) : (
+        <div className=" flex flex-col gap-4 overflow-y-auto">
+          {planters?.docs.map((planter) => (
+            <PlanterItem key={planter.id} id={planter.id} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

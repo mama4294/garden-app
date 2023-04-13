@@ -2,7 +2,7 @@ import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { ChangeEvent } from "react";
 import PlanterPreview from "../../components/PreviewPlanter";
 import { db } from "../../firebase";
 
@@ -47,7 +47,9 @@ const NewPlanterModal = () => {
             placeholder="Planter Name"
             className="input w-full text-lg font-bold pl-0 mb-2"
             value={state.name}
-            onChange={(e) => setState({ ...state, name: e.target.value })}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setState({ ...state, name: e.target.value })
+            }
           />
 
           <div className="mb-6 flex w-full gap-2 flex-col">
@@ -61,7 +63,7 @@ const NewPlanterModal = () => {
                   placeholder="0.01"
                   className="input input-bordered flex-1 min-w-0 "
                   value={state.width}
-                  onChange={(e) =>
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     setState({ ...state, width: Number(e.target.value) })
                   }
                 />

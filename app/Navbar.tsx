@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
+import Loading from "../components/Loading";
 
 type Props = {
   session: Session | null;
@@ -129,7 +130,7 @@ export const Navbar = ({ session }: Props) => {
                     className="h-6 w-6 rounded-full"
                   />
                   <p className="text-base-content">
-                    {signoutLoading ? "Signing Out...." : "Sign Out"}
+                    {signoutLoading ? <Loading /> : "Sign Out"}
                   </p>
                 </button>
               </li>
