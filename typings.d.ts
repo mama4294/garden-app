@@ -1,4 +1,4 @@
-export type Planter = {
+type Planter = {
   id: string;
   name: string;
 };
@@ -8,4 +8,15 @@ type Plant = {
   label: string;
   size: number;
   color: string;
+};
+
+type PlantGroup = {
+  label: string;
+  options: Plant[];
+};
+
+type PageState = {
+  mode: MODE;
+  selectedPlant: Plant;
+  showDimentions: boolean;
 };

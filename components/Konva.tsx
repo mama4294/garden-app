@@ -3,14 +3,14 @@ import { KonvaEventObject } from "konva/lib/Node";
 import Quadtree from "quadtree-lib";
 import { ChangeEvent, useEffect, useReducer, useRef, useState } from "react";
 import { Stage, Layer, Rect, Text, Tag, Label } from "react-konva";
-import { MODE } from "../app/edit/page";
+import { MODE } from "../app/[planterId]/ActionMenu";
+
 import {
   ACTIONS,
   defaultState,
   planterReducer,
   Shape as ShapeType,
 } from "../app/reducers/planterReducer";
-import { Plant } from "../typings";
 import FrameDimentions from "./FrameDimentions";
 import PlanterFrame from "./PlanterFrame";
 
@@ -18,15 +18,9 @@ interface KeyboardEvent {
   key: string;
 }
 
-const KonvaCanvas = ({
-  selectedPlant,
-  mode,
-  showDimentions,
-}: {
-  selectedPlant: Plant;
-  mode: MODE;
-  showDimentions: boolean;
-}) => {
+const KonvaCanvas = ({ pageState }: { pageState: PageState }) => {
+  const { mode, selectedPlant, showDimentions } = pageState;
+
   const newID = () => {
     //creates new id
     return Math.floor(Math.random() * 1000).toString();
@@ -59,7 +53,6 @@ const KonvaCanvas = ({
 
   //Updates quadtree when plants are added or removed
   useEffect(() => {
-    console.log(quadtree);
     quadtree.clear();
     const shapes = state.plants.map((plant) => {
       return {
@@ -95,7 +88,6 @@ const KonvaCanvas = ({
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key == "Delete" || event.key == "Backspace") {
-        console.log("deleting selected");
         dispatch({
           type: ACTIONS.DELETED_SELECTED,
         });
@@ -133,7 +125,6 @@ const KonvaCanvas = ({
   };
 
   const handleDragEnd = (e: KonvaEventObject<DragEvent>) => {
-    console.log("end drag");
     const loc = snap({ x: e.target.x(), y: e.target.y() });
     const id = e.target.id();
     const size = state.plants.find((plant) => plant.id == id)?.size;
@@ -160,8 +151,6 @@ const KonvaCanvas = ({
         },
       });
     } else {
-      console.log("not valid location");
-      console.log(collisions);
     }
   };
 

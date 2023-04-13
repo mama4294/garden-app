@@ -1,5 +1,12 @@
+"use client";
+
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { deleteDoc, doc } from "firebase/firestore";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useDocumentData } from "react-firebase-hooks/firestore";
+import { db } from "../../../firebase";
 
 type PageProps = {
   params: {
@@ -9,16 +16,37 @@ type PageProps = {
 
 function PlanterPage(props: PageProps) {
   const planterId = props.params.planterId;
+  const router = useRouter();
+  const { data: session } = useSession();
+  const [data, loading] = useDocumentData(
+    doc(db, "users", session?.user?.email!, "planters", planterId)
+  );
+
+  const handleDelete = async () => {
+    await deleteDoc(
+      doc(db, "users", session?.user?.email!, "planters", planterId)
+    );
+    router.replace("/planters");
+  };
+
+  if (loading) return loadingSpinner();
+  if (!data) return noPlanterFound();
 
   return (
     <div className="flex justify-center items-center h-full">
       <div className="card card-compact w-96 bg-base-200 shadow-xl">
         <div className="card-body">
-          <h2 className="card-title"> {`Planter ${planterId}`}</h2>
-          <div className="card-actions justify-end">
-            <Link className="btn btn-primary flex gap-1" href={"/edit"}>
+          <h2 className="card-title"> {data?.name}</h2>
+          <p className="card-subtitle">Width: {data?.width}in</p>
+          <p className="card-subtitle">Height: {data?.height}in</p>
+          <div className="card-actions justify-between">
+            <button className="btn btn-ghost flex gap-1" onClick={handleDelete}>
+              <TrashIcon className="w-6 h-6" />
+              Delete
+            </button>
+            <Link className="btn btn-primary flex gap-1" href={`/${planterId}`}>
               <PencilIcon className="w-6 h-6" />
-              Edit
+              Design
             </Link>
           </div>
         </div>
@@ -26,5 +54,17 @@ function PlanterPage(props: PageProps) {
     </div>
   );
 }
+
+const noPlanterFound = () => (
+  <div className="card-body">
+    <h2 className="card-title"> No Planter Found</h2>
+  </div>
+);
+
+const loadingSpinner = () => (
+  <div className="flex justify-center items-center h-full">
+    <div>Loading...</div>;
+  </div>
+);
 
 export default PlanterPage;
