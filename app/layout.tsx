@@ -4,7 +4,6 @@ import { Navbar } from "./Navbar";
 import { authOptions } from "../pages/api/auth/[...nextauth]";
 import { SessionProvider } from "../components/SessionProvider";
 import { getServerSession } from "next-auth";
-import HomePage from "../components/HomePage";
 
 export const metadata = {
   title: "Garden Designer",

@@ -1,14 +1,32 @@
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import React from "react";
 import PlanterPreview from "../../components/PreviewPlanter";
+import { db } from "../../firebase";
 
 const NewPlanterModal = () => {
+  const router = useRouter();
   const [state, setState] = React.useState({
     name: "Planter 1",
     width: 36,
     height: 12,
   });
+
+  const { data: session } = useSession(); //renames data to session
+
+  const createNewDBPlanter = async () => {
+    const doc = await addDoc(
+      collection(db, "users", session?.user?.email!, "planters"),
+      {
+        ...state,
+        userId: session?.user?.email,
+        createdAt: serverTimestamp(),
+      }
+    );
+    router.push(`/planters/${doc.id}`);
+  };
 
   return (
     <div>
@@ -77,9 +95,9 @@ const NewPlanterModal = () => {
             >
               Cancel
             </label>
-            <Link className="btn btn-primary" href={"/edit"}>
+            <button className="btn btn-primary" onClick={createNewDBPlanter}>
               Create
-            </Link>
+            </button>
           </div>
         </div>
       </div>

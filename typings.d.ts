@@ -1,5 +1,5 @@
 export type Planter = {
-  id: number;
+  id: string;
   name: string;
 };
 
