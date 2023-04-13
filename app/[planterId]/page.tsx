@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import KonvaCanvas from "../../components/Konva";
+import { SignIn } from "../../components/SignIn";
 import { db } from "../../firebase";
 import { plantOptions } from "../constants/plantData";
 import { ActionMenu, MODE } from "./ActionMenu";
@@ -18,6 +19,9 @@ type PageProps = {
 function PlanterPage(props: PageProps) {
   const planterId = props.params.planterId;
   const { data: session } = useSession();
+
+  if (!session) return SignIn();
+
   const [data, loading] = useDocumentData(
     doc(db, "users", session?.user?.email!, "planters", planterId)
   );

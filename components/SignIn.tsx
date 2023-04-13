@@ -2,13 +2,15 @@
 
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export const SignIn = () => {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const handleSignIn = () => {
-    signIn("google");
+  const handleSignIn = async () => {
+    await signIn("google");
     setLoading(true);
   };
 

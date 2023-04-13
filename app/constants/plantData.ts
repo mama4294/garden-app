@@ -1,5 +1,3 @@
-import { PlantGroup } from "../../typings";
-
 export const plantOptions: PlantGroup[] = [
   {
     label: "Fruits",
