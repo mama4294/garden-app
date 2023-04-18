@@ -48,9 +48,6 @@ export const Navbar = ({ session }: Props) => {
             <li>
               <Link href="/planters">Planters</Link>
             </li>
-            <li>
-              <Link href="/edit">Edit</Link>
-            </li>
           </ul>
         </div>
       </div>
