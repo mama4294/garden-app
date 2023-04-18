@@ -55,7 +55,9 @@ export const Navbar = ({ session }: Props) => {
         </div>
       </div>
       <div className="navbar-center">
-        <a className="btn btn-ghost normal-case text-xl">Garden Designer</a>
+        <a href="/" className="btn btn-ghost normal-case text-xl">
+          Garden Designer
+        </a>
       </div>
       <div className="navbar-end">
         <button className="btn btn-ghost btn-circle">
