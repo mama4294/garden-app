@@ -10,9 +10,9 @@ function Page() {
   const { data: session } = useSession();
   const router = useRouter();
 
-  if (session) {
-    router.replace("/planters");
-  }
+  // if (session) {
+  //   router.replace("/planters");
+  // }
 
   return <HomePage />;
 }
