@@ -110,8 +110,6 @@ const PlanterFrame = ({
     />
   );
 
-  console.table({ width, height, frameSize });
-
   return (
     <Group x={x} y={y}>
       <FrameTop />

@@ -1,4 +1,5 @@
 export enum ACTIONS {
+  SET_STATE = "SET_STATE",
   ADD_PLANT = "ADD_PLANT",
   MOVE_PLANT = "MOVE_PLANT",
   DELETED_SELECTED = "DELETED_SELECTED",
@@ -10,7 +11,11 @@ export enum ACTIONS {
   CLEAR = "CLEAR",
 }
 
-type Action =
+export type Action =
+  | {
+      type: ACTIONS.SET_STATE;
+      payload: Planter;
+    }
   | {
       type: ACTIONS.CHANGE_PLANTER_WIDTH | ACTIONS.CHANGE_PLANTER_HEIGHT;
       payload: number;
@@ -35,30 +40,16 @@ type Action =
       };
     };
 
-export type Shape = {
-  id: string;
-  selected: boolean;
-  x: number;
-  y: number;
-  size: number;
-  type: string;
-  color: string;
-};
-
-type State = {
-  plants: Shape[];
-  width: number;
-  height: number;
-};
-
-export const defaultState: State = {
+export const defaultState = {
   plants: [],
   width: 350, //inches
   height: 200, //inches
 };
 
-export const planterReducer = (state: State, action: Action) => {
+export const planterReducer = (state: Planter, action: Action) => {
   switch (action.type) {
+    case ACTIONS.SET_STATE:
+      return { ...state, ...action.payload };
     case ACTIONS.CHANGE_PLANTER_HEIGHT:
       return { ...state, height: action.payload };
     case ACTIONS.CHANGE_PLANTER_WIDTH:

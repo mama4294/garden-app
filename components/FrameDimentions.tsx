@@ -1,4 +1,5 @@
 import { Group, Label, Shape, Tag, Text } from "react-konva";
+import { SIZE_MULTIPLIER } from "../app/constants/plantData";
 
 const FrameDimentions = ({
   width,
@@ -78,14 +79,14 @@ const FrameDimentions = ({
   const LabelWidth = () => (
     <Label x={width / 2} y={height + arrowOffset - arrowSize + frameSize * 2}>
       <Tag fill="white" stroke="gray" />
-      <Text text={`${width} in`} padding={2} fill="black" />
+      <Text text={`${width / SIZE_MULTIPLIER} in`} padding={2} fill="black" />
     </Label>
   );
 
   const LabelHight = () => (
     <Label x={width + arrowOffset + frameSize * 2} y={height / 2}>
       <Tag fill="white" stroke="gray" />
-      <Text text={`${height} in`} padding={2} fill="black" />
+      <Text text={`${height / SIZE_MULTIPLIER} in`} padding={2} fill="black" />
     </Label>
   );
 

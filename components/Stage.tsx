@@ -82,7 +82,6 @@ const GridTable = ({ length, width }: { length: number; width: number }) => {
   };
 
   const gridData = generateArrayOfArrays(length, width);
-  console.table(gridData);
 
   return (
     <div className="flex justify-center items-center">

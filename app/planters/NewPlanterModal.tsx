@@ -12,6 +12,7 @@ const NewPlanterModal = () => {
     name: "Planter 1",
     width: 36,
     height: 12,
+    plants: [],
   });
 
   const { data: session } = useSession(); //renames data to session

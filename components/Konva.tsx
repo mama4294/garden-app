@@ -1,16 +1,11 @@
 "use client";
 import { KonvaEventObject } from "konva/lib/Node";
 import Quadtree from "quadtree-lib";
-import { ChangeEvent, useEffect, useReducer, useRef, useState } from "react";
+import { Dispatch, useEffect, useRef, useState } from "react";
 import { Stage, Layer, Rect, Text, Tag, Label } from "react-konva";
+import { Action, ACTIONS } from "../app/reducers/planterReducer";
 import { MODE } from "../app/[planterId]/ActionMenu";
 
-import {
-  ACTIONS,
-  defaultState,
-  planterReducer,
-  Shape as ShapeType,
-} from "../app/reducers/planterReducer";
 import FrameDimentions from "./FrameDimentions";
 import PlanterFrame from "./PlanterFrame";
 
@@ -18,15 +13,29 @@ interface KeyboardEvent {
   key: string;
 }
 
-const KonvaCanvas = ({ pageState }: { pageState: PageState }) => {
+const KonvaCanvas = ({
+  pageState,
+  state,
+  dispatch,
+}: {
+  pageState: PageState;
+  state: Planter;
+  dispatch: Dispatch<Action>;
+}) => {
   const { mode, selectedPlant, showDimentions } = pageState;
+
+  const GRID_SIZE = 10; //for grid smapping
+  let frameSize = 12;
+  if (state.height < 50 || state.width < 50)
+    frameSize = Math.min(state.height, state.width) / 4;
 
   const newID = () => {
     //creates new id
+    //TODO make this better
     return Math.floor(Math.random() * 1000).toString();
   };
 
-  type Taco = {
+  type QuadTreeShape = {
     x: number;
     y: number;
     width: number;
@@ -34,17 +43,12 @@ const KonvaCanvas = ({ pageState }: { pageState: PageState }) => {
   };
 
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [state, dispatch] = useReducer(planterReducer, defaultState);
+  // const [state, dispatch] = useReducer(planterReducer, defaultState);
   const [cursorBlock, setCursorBlock] = useState<Mouse>({ x: 0, y: 0 });
-  const [quadtree] = useState<Quadtree<Taco>>(
+  const [quadtree] = useState<Quadtree<QuadTreeShape>>(
     new Quadtree({ width: state.width, height: state.height })
   ); //used to store location data of plants for collision detection
-  const [hoveredPlant, setHoveredPlant] = useState<ShapeType | null>(null);
-
-  const GRID_SIZE = 10;
-  let frameSize = 12;
-  if (state.height < 50 || state.width < 50)
-    frameSize = Math.min(state.height, state.width) / 4;
+  const [hoveredPlant, setHoveredPlant] = useState<Shape | null>(null);
 
   type Mouse = {
     x: number;
@@ -266,7 +270,7 @@ const KonvaCanvas = ({ pageState }: { pageState: PageState }) => {
                 frameSize={frameSize}
               />
             )}
-            {state.plants.map((s: ShapeType) => (
+            {state.plants.map((s: Shape) => (
               <Rect
                 key={s.id}
                 id={s.id}
