@@ -13,8 +13,8 @@ export default async function RootLayout({
   return (
     <>
       {session ? (
-        <main className="flex h-full">
-          <div className="border-transparent border-r-base-300 border-2">
+        <main className="flex flex-1 overflow-hidden">
+          <div className="border-transparent border-r-base-300 border-2 flex overflow-hidden">
             <PlanterList />
           </div>
           <div className="flex-1 overflow-hidden">{children}</div>

@@ -22,7 +22,7 @@ export default async function RootLayout({
       <body className="h-screen flex flex-col">
         <SessionProvider session={session}>
           <Navbar session={session} />
-          <div className="flex-1">{children}</div>
+          <div className="flex flex-1 overflow-hidden">{children}</div>
           <Footer />
         </SessionProvider>
       </body>

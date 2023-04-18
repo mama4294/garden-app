@@ -20,7 +20,7 @@ export const PlanterList = () => {
   );
 
   return (
-    <div className="flex flex-col gap-2 m-4">
+    <div className="flex flex-1 flex-col gap-2 m-4">
       <NewPlanterModal />
 
       {loading ? (
@@ -28,7 +28,7 @@ export const PlanterList = () => {
           <Loading />
         </div>
       ) : (
-        <div className=" flex flex-col gap-4 overflow-y-auto">
+        <div className="flex flex-1 flex-col gap-4 overflow-y-auto ">
           {planters?.docs.map((planter) => (
             <PlanterItem key={planter.id} id={planter.id} />
           ))}
