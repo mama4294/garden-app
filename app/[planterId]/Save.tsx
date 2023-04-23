@@ -1,5 +1,6 @@
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { useSession } from "next-auth/react";
+import { toast } from "react-hot-toast";
 import { db } from "../../firebase";
 
 type Props = {
@@ -10,10 +11,15 @@ const Save = ({ state }: Props) => {
   const { data: session } = useSession();
 
   const handleSave = async () => {
-    addDoc(
-      collection(db, "users", session?.user?.email!, "planters", state.id),
-      state
-    );
+    const notification = toast.loading("Saving...");
+    try {
+      updateDoc(
+        doc(db, "users", session?.user?.email!, "planters", state.id),
+        state
+      ).then(() => toast.success("Saved", { id: notification }));
+    } catch (error) {
+      toast.error("There was an error", { id: notification });
+    }
   };
 
   return (
