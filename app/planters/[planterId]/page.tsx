@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useDocumentData } from "react-firebase-hooks/firestore";
+import { PlanterPreview } from "../../../components/Konva";
 import { db } from "../../../firebase";
 
 type PageProps = {
@@ -32,13 +33,20 @@ function PlanterPage(props: PageProps) {
   if (loading) return loadingSpinner();
   if (!data) return noPlanterFound();
 
+  const state = {
+    name: data.name,
+    width: data.width,
+    height: data.height,
+    plants: data.plants,
+    id: planterId,
+  };
+
   return (
     <div className="flex justify-center items-center h-full">
       <div className="card card-compact w-96 bg-base-200 shadow-xl">
         <div className="card-body">
           <h2 className="card-title"> {data?.name}</h2>
-          <p className="card-subtitle">Width: {data?.width}in</p>
-          <p className="card-subtitle">Height: {data?.height}in</p>
+          <PlanterPreview state={state} />
           <div className="card-actions justify-between">
             <button className="btn btn-ghost flex gap-1" onClick={handleDelete}>
               <TrashIcon className="w-6 h-6" />

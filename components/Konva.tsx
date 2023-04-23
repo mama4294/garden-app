@@ -15,6 +15,11 @@ interface KeyboardEvent {
   key: string;
 }
 
+const getFrameSize = ({ width, height }: { width: number; height: number }) => {
+  if (height < 50 || width < 50) return Math.min(height, height) / 4;
+  return 12;
+};
+
 const KonvaCanvas = ({
   pageState,
   state,
@@ -29,10 +34,10 @@ const KonvaCanvas = ({
   const resizedHeight = state.height * SIZE_MULTIPLIER;
 
   const GRID_SIZE = 10; //for grid smapping
-  let frameSize = 12;
-
-  if (resizedHeight < 50 || resizedWidth < 50)
-    frameSize = Math.min(resizedHeight, resizedWidth) / 4;
+  const frameSize = getFrameSize({
+    height: resizedHeight,
+    width: resizedWidth,
+  });
 
   type QuadTreeShape = {
     x: number;
@@ -333,3 +338,84 @@ const KonvaCanvas = ({
 };
 
 export default KonvaCanvas;
+
+type PlanterPreviewProps = {
+  state: Planter;
+};
+
+export const PlanterPreview = ({ state }: PlanterPreviewProps) => {
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const resizedHeight = state.height * SIZE_MULTIPLIER;
+  const resizedWidth = state.width * SIZE_MULTIPLIER;
+  const frameSize = getFrameSize({
+    height: resizedHeight,
+    width: resizedWidth,
+  });
+
+  const [canvasSize, setCanvasSize] = useState({
+    width: 300,
+    height: 300,
+    scale: 1,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (canvasRef.current?.offsetWidth) {
+        const width = canvasRef.current.offsetWidth;
+        const height = canvasRef.current.offsetHeight;
+        const scale =
+          Math.min(width / resizedWidth, height / resizedHeight) * 0.8;
+        setCanvasSize({
+          width,
+          height,
+          scale,
+        });
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [state]);
+
+  return (
+    <div className="h-full w-full fill-primary stroke-accent">
+      <Stage
+        width={canvasSize.width}
+        height={canvasSize.height}
+        scaleX={canvasSize.scale}
+        scaleY={canvasSize.scale}
+      >
+        <Layer>
+          <PlanterFrame
+            height={resizedHeight}
+            width={resizedWidth}
+            frameSize={frameSize}
+            fillColor={"green"}
+            frameColor={"brown"}
+          />
+
+          <FrameDimentions
+            height={resizedHeight}
+            width={resizedWidth}
+            frameSize={frameSize}
+          />
+
+          {state.plants.map((s: Shape) => (
+            <Rect
+              key={s.id}
+              id={s.id}
+              x={s.x}
+              y={s.y}
+              // draggable
+              width={s.size}
+              height={s.size}
+              stroke="black"
+              fill={s.color}
+              strokeWidth={s.selected ? 3 : 1}
+            />
+          ))}
+        </Layer>
+      </Stage>
+    </div>
+  );
+};
