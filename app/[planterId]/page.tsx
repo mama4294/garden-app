@@ -31,7 +31,7 @@ function PlanterPage(props: PageProps) {
     width: data.width,
     height: data.height,
     plants: data.plants,
-    id: data.id,
+    id: planterId,
   };
 
   return <EditPage initialState={initialState} />;

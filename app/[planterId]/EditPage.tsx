@@ -24,7 +24,11 @@ export const EditPage = ({ initialState }: Props) => {
 
   return (
     <div className="flex-1">
-      <ActionMenu pageState={pageState} setPageState={setPageState} />
+      <ActionMenu
+        pageState={pageState}
+        setPageState={setPageState}
+        state={state}
+      />
       <div className="bg-base-200 p-4 rounded-lg flex-1 shadow-md m-4">
         <KonvaCanvas pageState={pageState} state={state} dispatch={dispatch} />
       </div>

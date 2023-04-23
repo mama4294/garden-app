@@ -4,10 +4,12 @@ import {
 } from "@heroicons/react/24/outline";
 import Select, { SingleValue } from "react-select";
 import { plantOptions } from "../constants/plantData";
+import Save from "./Save";
 
 type Props = {
   pageState: PageState;
   setPageState: (pageState: PageState) => void;
+  state: Planter;
 };
 
 export enum MODE {
@@ -15,7 +17,7 @@ export enum MODE {
   ADD = "ADD",
 }
 
-export const ActionMenu = ({ pageState, setPageState }: Props) => {
+export const ActionMenu = ({ pageState, setPageState, state }: Props) => {
   const { selectedPlant, mode, showDimentions } = pageState;
 
   const handleToggleDimentions = () => {
@@ -109,8 +111,7 @@ export const ActionMenu = ({ pageState, setPageState }: Props) => {
             </li>
           </ul>
         </div>
-
-        <button className="btn btn-sm btn-primary">Save</button>
+        <Save state={state} />
       </div>
     </header>
   );
