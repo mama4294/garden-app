@@ -3,6 +3,7 @@ import { KonvaEventObject } from "konva/lib/Node";
 import Quadtree from "quadtree-lib";
 import { Dispatch, useEffect, useRef, useState } from "react";
 import { Stage, Layer, Rect, Text, Tag, Label } from "react-konva";
+import { SIZE_MULTIPLIER } from "../app/constants/plantData";
 import { Action, ACTIONS } from "../app/reducers/planterReducer";
 import { MODE } from "../app/[planterId]/ActionMenu";
 
@@ -23,11 +24,14 @@ const KonvaCanvas = ({
   dispatch: Dispatch<Action>;
 }) => {
   const { mode, selectedPlant, showDimentions } = pageState;
+  const resizedWidth = state.width * SIZE_MULTIPLIER;
+  const resizedHeight = state.height * SIZE_MULTIPLIER;
 
   const GRID_SIZE = 10; //for grid smapping
   let frameSize = 12;
-  if (state.height < 50 || state.width < 50)
-    frameSize = Math.min(state.height, state.width) / 4;
+
+  if (resizedHeight < 50 || resizedWidth < 50)
+    frameSize = Math.min(resizedHeight, resizedWidth) / 4;
 
   const newID = () => {
     //creates new id
@@ -46,7 +50,7 @@ const KonvaCanvas = ({
   // const [state, dispatch] = useReducer(planterReducer, defaultState);
   const [cursorBlock, setCursorBlock] = useState<Mouse>({ x: 0, y: 0 });
   const [quadtree] = useState<Quadtree<QuadTreeShape>>(
-    new Quadtree({ width: state.width, height: state.height })
+    new Quadtree({ width: resizedWidth, height: resizedHeight })
   ); //used to store location data of plants for collision detection
   const [hoveredPlant, setHoveredPlant] = useState<Shape | null>(null);
 
@@ -80,7 +84,7 @@ const KonvaCanvas = ({
               y: cursorBlock.y,
               type: selectedPlant.label,
               color: selectedPlant.color,
-              size: selectedPlant.size,
+              size: selectedPlant.size * SIZE_MULTIPLIER,
               id: newID(),
               selected: false,
             },
@@ -196,8 +200,8 @@ const KonvaCanvas = ({
   const locInFrame = ({ x, y }: { x: number; y: number }) => {
     if (x < frameSize || y < frameSize) return false;
     if (
-      x > state.width + frameSize - selectedPlant.size ||
-      y > state.height + frameSize - selectedPlant.size
+      x > resizedWidth + frameSize - selectedPlant.size * SIZE_MULTIPLIER ||
+      y > resizedHeight + frameSize - selectedPlant.size * SIZE_MULTIPLIER
     )
       return false;
     return true;
@@ -208,8 +212,8 @@ const KonvaCanvas = ({
     quadtree.colliding({
       x: cursorBlock.x,
       y: cursorBlock.y,
-      width: selectedPlant.size,
-      height: selectedPlant.size,
+      width: selectedPlant.size * SIZE_MULTIPLIER,
+      height: selectedPlant.size * SIZE_MULTIPLIER,
     }).length > 0;
   const isValidPosition = isMouseInFrame && !isColliding;
 
@@ -217,7 +221,8 @@ const KonvaCanvas = ({
     const handleResize = () => {
       const width = canvasRef!.current!.offsetWidth;
       const height = canvasRef!.current!.offsetHeight;
-      const scale = Math.min(width / state.width, height / state.height) * 0.8;
+      const scale =
+        Math.min(width / resizedWidth, height / resizedHeight) * 0.8;
       setCanvasSize({
         width,
         height,
@@ -257,16 +262,16 @@ const KonvaCanvas = ({
         >
           <Layer>
             <PlanterFrame
-              height={state.height}
-              width={state.width}
+              height={resizedHeight}
+              width={resizedWidth}
               frameSize={frameSize}
               fillColor={fillColor}
               frameColor={frameColor}
             />
             {showDimentions && (
               <FrameDimentions
-                height={state.height}
-                width={state.width}
+                height={resizedHeight}
+                width={resizedWidth}
                 frameSize={frameSize}
               />
             )}
@@ -292,8 +297,8 @@ const KonvaCanvas = ({
             {/* Cursor */}
             {mode == MODE.ADD && (
               <Rect
-                width={selectedPlant.size}
-                height={selectedPlant.size}
+                width={selectedPlant.size * SIZE_MULTIPLIER}
+                height={selectedPlant.size * SIZE_MULTIPLIER}
                 stroke="black"
                 fill={isValidPosition ? selectedPlant.color : "gray"}
                 opacity={0.5}
