@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
 import { db } from "../../firebase";

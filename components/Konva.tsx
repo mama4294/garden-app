@@ -6,6 +6,7 @@ import { Stage, Layer, Rect, Text, Tag, Label } from "react-konva";
 import { SIZE_MULTIPLIER } from "../app/constants/plantData";
 import { Action, ACTIONS } from "../app/reducers/planterReducer";
 import { MODE } from "../app/[planterId]/ActionMenu";
+import { v4 as uuidv4 } from "uuid";
 
 import FrameDimentions from "./FrameDimentions";
 import PlanterFrame from "./PlanterFrame";
@@ -32,12 +33,6 @@ const KonvaCanvas = ({
 
   if (resizedHeight < 50 || resizedWidth < 50)
     frameSize = Math.min(resizedHeight, resizedWidth) / 4;
-
-  const newID = () => {
-    //creates new id
-    //TODO make this better
-    return Math.floor(Math.random() * 1000).toString();
-  };
 
   type QuadTreeShape = {
     x: number;
@@ -85,7 +80,7 @@ const KonvaCanvas = ({
               type: selectedPlant.label,
               color: selectedPlant.color,
               size: selectedPlant.size * SIZE_MULTIPLIER,
-              id: newID(),
+              id: uuidv4(),
               selected: false,
             },
           });
@@ -154,7 +149,7 @@ const KonvaCanvas = ({
           type: "test",
           color: "purple",
           size: 4,
-          id: newID(),
+          id: uuidv4(),
           selected: false,
         },
       });
