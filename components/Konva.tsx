@@ -174,11 +174,15 @@ const KonvaCanvas = ({
 
   const snap = ({ x, y }: Mouse): Mouse => {
     const snapX =
-      Math.round((x - selectedPlant.size / 2 - frameSize) / GRID_SIZE) *
+      Math.round(
+        (x - (selectedPlant.size * SIZE_MULTIPLIER) / 2 - frameSize) / GRID_SIZE
+      ) *
         GRID_SIZE +
       frameSize;
     const snapY =
-      Math.round((y - selectedPlant.size / 2 - frameSize) / GRID_SIZE) *
+      Math.round(
+        (y - (selectedPlant.size * SIZE_MULTIPLIER) / 2 - frameSize) / GRID_SIZE
+      ) *
         GRID_SIZE +
       frameSize;
     return { x: snapX, y: snapY };
