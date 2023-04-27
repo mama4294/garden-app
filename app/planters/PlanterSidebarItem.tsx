@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { db } from "../../firebase";
 
-export const PlanterItem = ({ id }: { id: string }) => {
+export const PlanterSidebarItem = ({ id }: { id: string }) => {
   const pathName = usePathname();
   const { data: session } = useSession();
   const [selected, setSelected] = useState(false);
