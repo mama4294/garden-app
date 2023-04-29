@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { PlanterPreview } from "../../../components/Konva";
 import { db } from "../../../firebase";
+import PlanterItem from "../PlanterItem";
 
 type PageProps = {
   params: {
@@ -43,21 +44,8 @@ function PlanterPage(props: PageProps) {
 
   return (
     <div className="flex justify-center items-center h-full">
-      <div className="card card-compact w-96 bg-base-200 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title"> {data?.name}</h2>
-          <PlanterPreview state={state} />
-          <div className="card-actions justify-between">
-            <button className="btn btn-ghost flex gap-1" onClick={handleDelete}>
-              <TrashIcon className="w-6 h-6" />
-              Delete
-            </button>
-            <Link className="btn btn-primary flex gap-1" href={`/${planterId}`}>
-              <PencilIcon className="w-6 h-6" />
-              Design
-            </Link>
-          </div>
-        </div>
+      <div className="w-96">
+        <PlanterItem state={state} />;
       </div>
     </div>
   );
