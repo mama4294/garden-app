@@ -26,7 +26,7 @@ const NewPlanterModal = () => {
         createdAt: serverTimestamp(),
       }
     );
-    router.push(`/planters/${doc.id}`);
+    router.push(`/${doc.id}`);
   };
 
   return (
