@@ -33,3 +33,22 @@ type Shape = {
   type: string;
   color: string;
 };
+
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface Camera {
+  x: number;
+  y: number;
+  z: number;
+}
+interface Viewport {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+  width: number;
+  height: number;
+}

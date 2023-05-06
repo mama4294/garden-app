@@ -3,6 +3,7 @@
 import { doc } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
+import EditCanvas from "../../components/EditCanvas";
 import { SignIn } from "../../components/SignIn";
 import { db } from "../../firebase";
 import EditPage from "./EditPage";
@@ -34,7 +35,8 @@ function PlanterPage(props: PageProps) {
     id: planterId,
   };
 
-  return <EditPage initialState={initialState} />;
+  return <EditCanvas />;
+  // return <EditPage initialState={initialState} />;
 }
 
 const noPlanterFound = () => (
