@@ -42,7 +42,21 @@ export function panCamera(camera: Camera, dx: number, dy: number): Camera {
 
 export function zoomCamera(camera: Camera, point: Point, dz: number): Camera {
   const zoom = camera.z - dz * camera.z;
+  const p1 = screenToCanvas(point, camera);
+  const p2 = screenToCanvas(point, { ...camera, z: zoom });
 
+  return {
+    x: camera.x + (p2.x - p1.x),
+    y: camera.y + (p2.y - p1.y),
+    z: zoom,
+  };
+}
+
+export function zoomCameraToValue(
+  camera: Camera,
+  point: Point,
+  zoom: number
+): Camera {
   const p1 = screenToCanvas(point, camera);
   const p2 = screenToCanvas(point, { ...camera, z: zoom });
 
@@ -65,4 +79,9 @@ export function zoomOut(camera: Camera): Camera {
   const nextZoom = (i - 1) * 0.25;
   const center = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
   return zoomCamera(camera, center, camera.z - nextZoom);
+}
+
+export function zoomTo(camera: Camera, percent: number): Camera {
+  const center = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+  return zoomCameraToValue(camera, center, percent);
 }

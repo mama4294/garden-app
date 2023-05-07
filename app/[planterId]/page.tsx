@@ -15,27 +15,28 @@ type PageProps = {
 };
 
 function PlanterPage(props: PageProps) {
-  const planterId = props.params.planterId;
-  const { data: session } = useSession();
-
-  if (!session) return SignIn();
-
-  const [data, loading] = useDocumentData(
-    doc(db, "users", session?.user?.email!, "planters", planterId)
-  );
-
-  if (loading) return loadingSpinner();
-  if (!data) return noPlanterFound();
-
-  const initialState: Planter = {
-    name: data.name,
-    width: data.width,
-    height: data.height,
-    plants: data.plants,
-    id: planterId,
-  };
-
   return <EditCanvas />;
+
+  // const planterId = props.params.planterId;
+  // const { data: session } = useSession();
+
+  // if (!session) return SignIn();
+
+  // const [data, loading] = useDocumentData(
+  //   doc(db, "users", session?.user?.email!, "planters", planterId)
+  // );
+
+  // if (loading) return loadingSpinner();
+  // if (!data) return noPlanterFound();
+
+  // const initialState: Planter = {
+  //   name: data.name,
+  //   width: data.width,
+  //   height: data.height,
+  //   plants: data.plants,
+  //   id: planterId,
+  // };
+
   // return <EditPage initialState={initialState} />;
 }
 

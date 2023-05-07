@@ -23,7 +23,7 @@ export default async function RootLayout({
         <ClientProvider session={session}>
           <Navbar session={session} />
           <div className="flex flex-1 overflow-hidden">{children}</div>
-          <Footer />
+          {/* <Footer /> */}
         </ClientProvider>
       </body>
     </html>
