@@ -1,34 +1,33 @@
 import { createMachine, assign } from "xstate";
 
+type Shapes = Record<string, Shape>;
+
 type Event =
   | { type: "HOVER"; id: string }
   | { type: "MOVE_CURSOR"; cursor: Point }
+  | { type: "SELECT_SHAPE"; id: string }
   | {
       type:
         | "SELECT_CURSOR"
         | "SELECT_PAN"
         | "SELECT_ADD"
-        | "SELECT_SHAPE"
-        | "CLEAR_SELECTION"
+        | "DELETE_SELECTION"
         | "UNHOVER";
     };
 
 type Context = {
   hoverId: string | null;
   cursor: Point;
+  shapes: Shapes;
+  selection: string[];
 };
 
 export const stateMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5SQJYBcD2AnAdAYwFctZsBiAZQFEAZSgYQBUB9ABQEEA5AbQAYBdRKAAOGWOhQYAdoJAAPRABYAnAEYcKgBwB2AKw8VAJgDMWnrqUAaEAE9EJozgM8jhlSZUA2HtoUBfX1aomLiExGRUtIxMbAAiMbwCSCAiYmgS0knyCMpqmrr6xqbmVrYITgaOevpGPh5KCgYG-oEQ6Nj4RCS45GAANmB4aZJQOCgQ-aQAsgDyAGqUTHQAqgBK5NMrCTIp4lIyWQ04PGZa9QYaBh6NOiolikYOV0o8Bq4KGkouHs3grcEdYVwAAsMAA3MBYFDDHCSDAACTBENIcLmlE2-G2ol2GVAWQAtEYDAp1FojEolB4FDorscdAo7tkqTgtAYtBojDoahoVKpvgFfm0Qp12iDwZDoaKkUsOCj5ujEsIsWk9plEASTOoFKTTm4FFSVPSbHYDczDCYtAaKZ8ND8gu0hABDSQUGj0ZjLNYbLZJHbKnFyRA6alHJQ6Aw6DRB7ysowMsM8HB1NmGLQeLTplQqW1-e1Ol2RZixeIYn1K9L7RBXBnprTM5yZ-IRjwfbOCnAOiAQfNu1icb2K1Ll1UIMMMi4aRz1tyUgqqVv-DtdiI9j3reWYwcq3GKVTqbR6M1FHSWI0Ibk4KrHHhKdN6hSU+ftRejcZgKaoxarNf95JlrcBsoPAcF4jAUUDNHebkPAZCliRUTlrw5bk3B4PwflhCA4BkO0sA3bEKwQPFKQcLQFANG5dFJT5DVKPEdBwclGObV4kw8B9+RwgEujwv0CLo0NmTI-VKLJUCGTcJRTWMclvG8alqUfIVARwHp+kGKEoB4odt0I+jyUaHgdAtbVSO0BlGgnfJPmbUCyR5HRFK49pVIGIYRjGfotP-LJjwYngrgtY8PBUZwIwZL5KmvFQLVQ7xmwcjicyUrocElcVNNLTd-XxOla1I8joqM0SaMQRpa1eaTm1OckW0SttQhStKNJheFEVwzL8OHPFlEk-LhKK6joNPUDay1MxovDPVQyaOr-gakU2uatKvOytV4InLUDGeBRDKDB4tAZO862Oc5ZMpPVHMdf1fW0gCNBeHAaiMMwbjA69R1PYKPBwKkbzI69dCJJRHMXFaCNeeiQLAsiNEg9ax3g9RORC-QGjJcMQc7F9PI63jh1ZSSYzAzRuSUYwHhg-REwQikNGC1N4P8fwgA */
+    /** @xstate-layout N4IgpgJg5mDOIC5SQJYBcD2AnAdAYwFctZsBiAZQFEAZSgYQBUB9ABQEEA5AbQAYBdRKAAOGWOhQYAdoJAAPRABYAnAEYcKgBwB2AKw8VAJgDMWnrqUAaEAE9EJozgM8jhlSZUA2HtoUBfX1aomLiExGRUtIxMbAAiMbwCSCAiYmgS0knyCMpqmrr6xqbmVrYITgaOevpGPh5KCgYG-oEQ6Nj4RCS4ALYYAG5g3WCSaDgoEAA2YKQAsgDyAGqUTHQAqgBK5HPrCTIp4lIyWQC0ujo4Sjxml+5ad1oldjrnBho6ugYqPDoKCkYKHma4FawQ6YVwAAt+mAsChJFAcJIMAAJaFYUjIxaUHb8PaiA4ZUAnFSGCreAw6DQkr5ebyPBBGDxaHA1BQ6DweAxaHwqJRAoLtUJdHBQgaw+EitGkVYcTFLHGJYT4tKHTKIY4koznb46JQeEwaQ06Tz04weFl1L4aHgKHgGX4qfkgwWddrkMBTPBpCVI92elWSCg0ejMcjItgsSi7JL7ANHdUOlm2pSmM16n4eelGfTqT6eK4aTkKLQePwBYFtEKu3B+sBeuEI2AeusB0gxYMMZYREMASTm3FxMeV6XjCGOxh4OD+ChJSmeug0M50We8OELGjnml57w8hadlbBwtr9YlTf96SDkVD4cj0aVqRHarHM7UXJ4HN+WicRiUlhsilUHB3zzO1lEXNx91BIQAENA27KI1k2bY72SYdVSJRBnnNHg5wpN49A0LkjHpHQnBwOpuUMEt7hJSD2hguDgyiWJ4kHe8CVHTl6XuHBTBcFR8kpXc+XLAVcGgiAIEvENWE4FDY0fDCEFI+lCI0RxnE1UsClUOjxMk6SEI2LYFTxB90LkADcm0PRDBMMxdVUtQqiuHC7l+AEyxaA8JIgMZJmmeYlhWYzkLY1DzMJSyyn1IDjGnTQFENE1-wQPUFHUHRsyULUqTcG1-HLJEIDgGQxLMjinw1RMPCqRkXy0HKHlS8dzXyjddBqAx9T4vTD2wCq4yqtwcvIurSxJRqTHpDw1EZVQbSMT5jA3R1ROdKtwRwXoBiGEZBsU6LjmtBxLmuZwtAE+56RUPQpzMUtZq1Nw2S0PqhXaHbBmGUZximA6LJOLQaiAu0XGzSkDD1TNUsKC4HuLX8AXcQF1oPD7ITRBsAai4l-nOWqrnqyampupK10td9NDMJd3urSUxQbREUTRHHRw1KHmUJ5wJoE0nYbqXMtF+Kk2RtZ46a20UYSZ6WsDZqq53NGoVCS7QcJyn8sw5Fl2QXFNZ2LSWj2bE8oAVpTjlsqcfnteps0LD8buNXNJoE20OTeY23VN70EV9X3DoUwGEyym2GmUP5vA5UtTRBzkSW0nCltF72a0D09A4s4PcYTNwcFstxPApVRlHpBp1PZZbtL0OoRO8qDYIt6LrQqGps10VXspU1LZvNNkUxnNzSOUPrfObrJPm1eL-kS5LKScjLbu7q5GkpeuK1BXz-P+odItHLklEcYG-k0KklGMIxiNSy41Fq7Ld1mktbsK3wgA */
     tsTypes: {} as import("./stateMachine.typegen").Typegen0,
 
     id: "editor",
-
-    context: {
-      hoverId: null,
-      cursor: { x: 0, y: 0 },
-    },
 
     schema: {
       context: {} as Context,
@@ -38,7 +37,7 @@ export const stateMachine = createMachine(
     states: {
       cursor: {
         states: {
-          Selecting: {
+          movement: {
             states: {
               idle: {
                 on: {
@@ -76,6 +75,36 @@ export const stateMachine = createMachine(
             },
 
             initial: "noHover",
+          },
+
+          Selecting: {
+            states: {
+              noSelection: {
+                on: {
+                  SELECT_SHAPE: {
+                    target: "selection",
+                    actions: ["addIdToSelection"],
+                  },
+                },
+              },
+
+              selection: {
+                on: {
+                  SELECT_SHAPE: {
+                    target: "selection",
+                    actions: ["addIdToSelection"],
+                    internal: true,
+                  },
+
+                  DELETE_SELECTION: {
+                    target: "noSelection",
+                    // actions: ["deleteSelection"],
+                  },
+                },
+              },
+            },
+
+            initial: "noSelection",
           },
         },
 
@@ -134,6 +163,11 @@ export const stateMachine = createMachine(
       setCursorLoc: assign((context, event) => {
         return {
           cursor: event.cursor,
+        };
+      }),
+      addIdToSelection: assign((context, event) => {
+        return {
+          selection: [...context.selection, event.id],
         };
       }),
     },

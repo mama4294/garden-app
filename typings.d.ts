@@ -6,6 +6,14 @@ type Planter = {
   plants: Shape[];
 };
 
+type PlanterState = {
+  id: string;
+  name: string;
+  width: number;
+  height: number;
+  plants: Record<string, Shape>;
+};
+
 type Plant = {
   value: string;
   label: string;

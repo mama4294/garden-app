@@ -13,6 +13,7 @@ export interface Typegen0 {
     services: never;
   };
   eventsCausingActions: {
+    addIdToSelection: "SELECT_SHAPE";
     clearHoveredId: "UNHOVER";
     setCursorLoc: "MOVE_CURSOR";
     setHoveredId: "HOVER";
@@ -25,17 +26,25 @@ export interface Typegen0 {
     | "add.idle"
     | "cursor"
     | "cursor.Selecting"
-    | "cursor.Selecting.idle"
+    | "cursor.Selecting.noSelection"
+    | "cursor.Selecting.selection"
     | "cursor.hovering"
     | "cursor.hovering.hover"
     | "cursor.hovering.noHover"
+    | "cursor.movement"
+    | "cursor.movement.idle"
     | "pan"
     | {
         add?: "idle";
         cursor?:
           | "Selecting"
           | "hovering"
-          | { Selecting?: "idle"; hovering?: "hover" | "noHover" };
+          | "movement"
+          | {
+              Selecting?: "noSelection" | "selection";
+              hovering?: "hover" | "noHover";
+              movement?: "idle";
+            };
       };
   tags: never;
 }

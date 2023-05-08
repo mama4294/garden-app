@@ -16,7 +16,6 @@ import {
   MagnifyingGlassPlusIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-import { assign } from "xstate";
 
 const subtract = (point1: Point, point2: Point): Point => {
   return { x: point1.x - point2.x, y: point1.y - point2.y };
@@ -26,9 +25,16 @@ const addition = (point1: Point, point2: Point): Point => {
   return { x: point1.x + point2.x, y: point1.y + point2.y };
 };
 
-export default function EditCanvas() {
+export default function EditCanvas({ planter }: { planter: PlanterState }) {
   const ref = useRef<SVGSVGElement>(null);
-  const [state, send] = useMachine(stateMachine);
+  const [state, send] = useMachine(stateMachine, {
+    context: {
+      hoverId: null,
+      cursor: { x: 0, y: 0 },
+      shapes: planter.plants,
+      selection: [],
+    },
+  });
 
   const [camera, setCamera] = useState<Camera>({
     x: 0,
@@ -60,34 +66,35 @@ export default function EditCanvas() {
   //   };
   // }
 
-  function onPointerMove(e: React.PointerEvent<SVGElement>) {
-    const dragging = rDragging.current;
-    if (!dragging) return;
-    console.log("move");
-    const shape = shapes[dragging.shape.id];
-    if (!shape) return;
-    const screenPoint = { x: e.clientX, y: e.clientY };
-    const delta = subtract(screenPoint, dragging.origin);
-    const newPoint = addition(shape, delta);
-    const point = screenToCanvas(newPoint, camera);
+  // function onPointerMove(e: React.PointerEvent<SVGElement>) {
+  //   const dragging = rDragging.current;
+  //   if (!dragging) return;
+  //   console.log("move");
+  //   const shape = shapes[dragging.shape.id];
+  //   if (!shape) return;
+  //   const screenPoint = { x: e.clientX, y: e.clientY };
+  //   const delta = subtract(screenPoint, dragging.origin);
+  //   const newPoint = addition(shape, delta);
+  //   const point = screenToCanvas(newPoint, camera);
 
-    setShapes({
-      ...shapes,
-      [shape.id]: {
-        ...shape,
-        x: point.x,
-        y: point.y,
-      },
-    });
-  }
+  //   setShapes({
+  //     ...shapes,
+  //     [shape.id]: {
+  //       ...shape,
+  //       x: point.x,
+  //       y: point.y,
+  //     },
+  //   });
+  // }
 
-  const onPointerUp = (e: React.PointerEvent<SVGElement>) => {
-    console.log("up");
-    e.currentTarget.releasePointerCapture(e.pointerId);
-    rDragging.current = null;
-  };
+  // const onPointerUp = (e: React.PointerEvent<SVGElement>) => {
+  //   console.log("up");
+  //   e.currentTarget.releasePointerCapture(e.pointerId);
+  //   rDragging.current = null;
+  // };
 
   useEffect(() => {
+    // Handles zooming and panning
     function handleWheel(event: WheelEvent) {
       event.preventDefault();
       const { clientX, clientY, deltaX, deltaY, ctrlKey } = event;
@@ -121,44 +128,6 @@ export default function EditCanvas() {
     height: window.innerHeight,
   });
 
-  const [shapes, setShapes] = useState<Record<string, Shape>>({
-    a: {
-      id: "1",
-      selected: false,
-      x: 0,
-      y: 0,
-      size: 20,
-      type: "Rose",
-      color: "red",
-    },
-    "2": {
-      id: "2",
-      selected: false,
-      x: 202,
-      y: 102,
-      size: 40,
-      type: "Rose",
-      color: "blue",
-    },
-    "3": {
-      id: "3",
-      selected: false,
-      x: 202,
-      y: 50,
-      size: 50,
-      type: "Rose",
-      color: "green",
-    },
-  });
-
-  const Planter = {
-    id: "1",
-    name: "Test Planter",
-    width: 36,
-    height: 24,
-    plants: shapes,
-  };
-
   const isPanning = state.matches("pan");
   const isSelecting = state.matches("cursor");
   const isAdding = state.matches("add");
@@ -184,16 +153,17 @@ export default function EditCanvas() {
           <rect
             x={0}
             y={0}
-            width={Planter.width * 10}
-            height={Planter.height * 10}
+            width={planter.width * 10}
+            height={planter.height * 10}
             fill="white"
             stroke="black"
             strokeWidth={4}
             rx={4}
           />
           {/* Plants */}
-          {Object.values(shapes).map((shape: Shape) => {
+          {Object.values(state.context.shapes).map((shape: Shape) => {
             const isHovered = shape.id === state.context.hoverId;
+            const isSelected = state.context.selection.includes(shape.id);
             return (
               <rect
                 key={shape.id}
@@ -203,12 +173,14 @@ export default function EditCanvas() {
                 width={shape.size}
                 height={shape.size}
                 fill={shape.color}
-                stroke={isHovered ? "blue" : "black"}
+                stroke={isHovered || isSelected ? "blue" : "black"}
                 strokeWidth={4}
                 rx={4}
                 // onPointerDown={() => send({ type: "HOVER", id: shape.id })}
                 // onPointerMove={onPointerMove}
-                // onPointerUp={onPointerUp}
+                onPointerDown={() =>
+                  send({ type: "SELECT_SHAPE", id: shape.id })
+                }
                 onPointerOver={() => send({ type: "HOVER", id: shape.id })}
                 onPointerOut={() => send("UNHOVER")}
               />

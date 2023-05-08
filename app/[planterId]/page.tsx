@@ -15,27 +15,55 @@ type PageProps = {
 };
 
 function PlanterPage(props: PageProps) {
-  return <EditCanvas />;
+  const planterId = props.params.planterId;
+  const { data: session } = useSession();
 
-  // const planterId = props.params.planterId;
-  // const { data: session } = useSession();
+  if (!session) return SignIn();
 
-  // if (!session) return SignIn();
+  const [data, loading] = useDocumentData(
+    doc(db, "users", session?.user?.email!, "planters", planterId)
+  );
 
-  // const [data, loading] = useDocumentData(
-  //   doc(db, "users", session?.user?.email!, "planters", planterId)
-  // );
+  if (loading) return loadingSpinner();
+  if (!data) return noPlanterFound();
 
-  // if (loading) return loadingSpinner();
-  // if (!data) return noPlanterFound();
+  const initialState: PlanterState = {
+    name: data.name,
+    width: data.width,
+    height: data.height,
+    plants: {
+      a: {
+        id: "a",
+        selected: false,
+        x: 0,
+        y: 0,
+        size: 20,
+        type: "Rose",
+        color: "red",
+      },
+      b: {
+        id: "b",
+        selected: false,
+        x: 202,
+        y: 102,
+        size: 40,
+        type: "Rose",
+        color: "blue",
+      },
+      c: {
+        id: "c",
+        selected: false,
+        x: 202,
+        y: 50,
+        size: 50,
+        type: "Rose",
+        color: "green",
+      },
+    },
+    id: planterId,
+  };
 
-  // const initialState: Planter = {
-  //   name: data.name,
-  //   width: data.width,
-  //   height: data.height,
-  //   plants: data.plants,
-  //   id: planterId,
-  // };
+  return <EditCanvas planter={initialState} />;
 
   // return <EditPage initialState={initialState} />;
 }
