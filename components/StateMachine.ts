@@ -13,7 +13,7 @@ type Event =
     };
 
 type Context = {
-  hoveredId: string | null;
+  hoverId: string | null;
   cursor: { x: number; y: number };
 };
 
@@ -24,7 +24,7 @@ export const stateMachine = createMachine(
     id: "editor",
 
     context: {
-      hoveredId: null,
+      hoverId: null,
       cursor: { x: 0, y: 0 },
     },
 
@@ -86,12 +86,12 @@ export const stateMachine = createMachine(
       // consolelog: (context, event) => console.log(JSON.stringify(event.id)),
       setHoveredId: assign((context, event) => {
         return {
-          hoveredId: event.id,
+          hoverId: event.id,
         };
       }),
       clearHoveredId: assign(() => {
         return {
-          hoveredId: null,
+          hoverId: null,
         };
       }),
     },

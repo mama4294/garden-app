@@ -30,11 +30,6 @@ export default function EditCanvas() {
   const ref = useRef<SVGSVGElement>(null);
   const [state, send] = useMachine(stateMachine);
 
-  // function send(event: any, payload: any) {
-  //   console.log("Event:", event, ", Payload:", payload);
-  //   sendMachine(event, payload);
-  // }
-
   const [camera, setCamera] = useState<Camera>({
     x: 0,
     y: 0,
@@ -145,6 +140,15 @@ export default function EditCanvas() {
       type: "Rose",
       color: "blue",
     },
+    "3": {
+      id: "3",
+      selected: false,
+      x: 202,
+      y: 50,
+      size: 50,
+      type: "Rose",
+      color: "green",
+    },
   });
 
   const Planter = {
@@ -155,9 +159,9 @@ export default function EditCanvas() {
     plants: shapes,
   };
 
-  const isPanning = state.value == "pan";
-  const isSelecting = state.value == "select";
-  const isAdding = state.value == "add";
+  const isPanning = state.matches("pan");
+  const isSelecting = state.matches("cursor");
+  const isAdding = state.matches("add");
 
   return (
     <div>
@@ -184,25 +188,28 @@ export default function EditCanvas() {
             rx={4}
           />
           {/* Plants */}
-          {Object.values(shapes).map((shape: Shape) => (
-            <rect
-              key={shape.id}
-              id={shape.id}
-              x={shape.x}
-              y={shape.y}
-              width={shape.size}
-              height={shape.size}
-              fill={shape.color}
-              stroke="black"
-              strokeWidth={4}
-              rx={4}
-              // onPointerDown={() => send({ type: "HOVER", id: shape.id })}
-              // onPointerMove={onPointerMove}
-              // onPointerUp={onPointerUp}
-              onPointerOver={() => send({ type: "HOVER", id: shape.id })}
-              onPointerOut={() => send("UNHOVER")}
-            />
-          ))}
+          {Object.values(shapes).map((shape: Shape) => {
+            const isHovered = shape.id === state.context.hoverId;
+            return (
+              <rect
+                key={shape.id}
+                id={shape.id}
+                x={shape.x}
+                y={shape.y}
+                width={shape.size}
+                height={shape.size}
+                fill={shape.color}
+                stroke={isHovered ? "blue" : "black"}
+                strokeWidth={4}
+                rx={4}
+                // onPointerDown={() => send({ type: "HOVER", id: shape.id })}
+                // onPointerMove={onPointerMove}
+                // onPointerUp={onPointerUp}
+                onPointerOver={() => send({ type: "HOVER", id: shape.id })}
+                onPointerOut={() => send("UNHOVER")}
+              />
+            );
+          })}
           {/* Add Shape Cursor */}
           <rect
             x={12}
@@ -224,25 +231,19 @@ export default function EditCanvas() {
         {/* Mode section */}
         <div className="flex gap-1 bg-base-200 rounded-2xl ">
           <button
-            className={`btn ${
-              state.matches("cursor") ? "btn-primary " : "btn-ghost"
-            }`}
+            className={`btn ${isSelecting ? "btn-primary " : "btn-ghost"}`}
             onClick={() => send("SELECT_CURSOR")}
           >
             Cursor
           </button>
           <button
-            className={`btn ${
-              state.value == "pan" ? "btn-primary " : "btn-ghost"
-            }`}
+            className={`btn ${isPanning ? "btn-primary " : "btn-ghost"}`}
             onClick={() => send("SELECT_PAN")}
           >
             Pan
           </button>
           <button
-            className={`btn ${
-              state.matches("add") ? "btn-primary " : "btn-ghost"
-            }`}
+            className={`btn ${isAdding ? "btn-primary " : "btn-ghost"}`}
             onClick={() => send("SELECT_ADD")}
           >
             Add
