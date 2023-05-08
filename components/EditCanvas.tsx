@@ -162,11 +162,15 @@ export default function EditCanvas() {
   const isPanning = state.matches("pan");
   const isSelecting = state.matches("cursor");
   const isAdding = state.matches("add");
+  const cursorLoc = canvasToScreen(state.context.cursor, camera);
 
   return (
     <div>
       <svg
         ref={ref}
+        onPointerMove={(e) =>
+          send("MOVE_CURSOR", { cursor: { x: e.clientX, y: e.clientY } })
+        }
         className={`fixed top-0 left-0 w-full h-full ${
           isPanning && "cursor-pointer"
         }`}
@@ -211,16 +215,18 @@ export default function EditCanvas() {
             );
           })}
           {/* Add Shape Cursor */}
-          <rect
-            x={12}
-            y={12}
-            width={10}
-            height={10}
-            fill="white"
-            stroke="black"
-            strokeWidth={4}
-            rx={4}
-          />
+          {isAdding && (
+            <rect
+              x={cursorLoc.x}
+              y={cursorLoc.y}
+              width={10}
+              height={10}
+              fill="white"
+              stroke="black"
+              strokeWidth={4}
+              rx={4}
+            />
+          )}
         </g>
       </svg>
       {/* Bottom actiom menu */}
@@ -261,8 +267,12 @@ export default function EditCanvas() {
 
       <div className="fixed top-50 left-0">
         <div>
-          state:{" "}
-          {JSON.stringify({ value: state.value, context: state.context })}
+          state:
+          {JSON.stringify(state.value)}
+        </div>
+        <div>
+          context:
+          {JSON.stringify(state.context)}
         </div>
         <div>Viewport x: {Math.floor(viewport.minX)}</div>
         <div>Viewport y: {Math.floor(viewport.minY)}</div>

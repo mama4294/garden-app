@@ -14,6 +14,7 @@ export interface Typegen0 {
   };
   eventsCausingActions: {
     clearHoveredId: "UNHOVER";
+    setCursorLoc: "MOVE_CURSOR";
     setHoveredId: "HOVER";
   };
   eventsCausingDelays: {};
@@ -21,10 +22,20 @@ export interface Typegen0 {
   eventsCausingServices: {};
   matchesStates:
     | "add"
+    | "add.idle"
     | "cursor"
-    | "cursor.hover"
-    | "cursor.noHover"
+    | "cursor.Selecting"
+    | "cursor.Selecting.idle"
+    | "cursor.hovering"
+    | "cursor.hovering.hover"
+    | "cursor.hovering.noHover"
     | "pan"
-    | { cursor?: "hover" | "noHover" };
+    | {
+        add?: "idle";
+        cursor?:
+          | "Selecting"
+          | "hovering"
+          | { Selecting?: "idle"; hovering?: "hover" | "noHover" };
+      };
   tags: never;
 }
