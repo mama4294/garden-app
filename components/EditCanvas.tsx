@@ -9,7 +9,7 @@ import {
   zoomOut,
   zoomTo,
 } from "./CameraNavigation";
-import { stateMachine } from "./StateMachine";
+import { Context, stateMachine } from "./StateMachine";
 import { useMachine } from "@xstate/react";
 import {
   MagnifyingGlassMinusIcon,
@@ -26,15 +26,15 @@ const addition = (point1: Point, point2: Point): Point => {
 };
 
 export default function EditCanvas({ planter }: { planter: PlanterState }) {
+  const context: Context = {
+    hoverId: null,
+    cursor: { x: 0, y: 0 },
+    shapes: planter.plants,
+    selection: [],
+  };
+
   const ref = useRef<SVGSVGElement>(null);
-  const [state, send] = useMachine(stateMachine, {
-    context: {
-      hoverId: null,
-      cursor: { x: 0, y: 0 },
-      shapes: planter.plants,
-      selection: [],
-    },
-  });
+  const [state, send] = useMachine(stateMachine, { context: context });
 
   const [camera, setCamera] = useState<Camera>({
     x: 0,
@@ -133,16 +133,38 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
   const isAdding = state.matches("add");
   const cursorLoc = canvasToScreen(state.context.cursor, camera);
 
+  const handlePointerDown = (e: React.PointerEvent<SVGElement>) => {
+    if (isPanning) {
+      send("START_PAN");
+    }
+  };
+
+  const handlePointeMove = (e: React.PointerEvent<SVGElement>) => {
+    if (state.matches("pan.panning")) {
+      const dx = -e.movementX;
+      const dy = -e.movementY;
+
+      setCamera((camera: Camera) => panCamera(camera, dx, dy));
+    }
+    if (isAdding) {
+      send("MOVE_CURSOR", { cursor: { x: e.clientX, y: e.clientY } });
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<SVGElement>) => {
+    return send("END_PAN");
+  };
+
   return (
     <div>
       <svg
         ref={ref}
-        onPointerMove={(e) =>
-          send("MOVE_CURSOR", { cursor: { x: e.clientX, y: e.clientY } })
-        }
-        className={`fixed top-0 left-0 w-full h-full ${
-          isPanning && "cursor-pointer"
-        }`}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointeMove}
+        onPointerUp={handlePointerUp}
+        className={`fixed top-0 left-0 w-full h-full 
+        ${isPanning && "cursor-grab"}
+        ${state.matches("pan.panning") && "cursor-grabbing"}`}
       >
         <defs>
           <rect id="box" x="100" y="100" height="100" width="100" />

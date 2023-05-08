@@ -34,6 +34,8 @@ export interface Typegen0 {
     | "cursor.movement"
     | "cursor.movement.idle"
     | "pan"
+    | "pan.notPanning"
+    | "pan.panning"
     | {
         add?: "idle";
         cursor?:
@@ -45,6 +47,7 @@ export interface Typegen0 {
               hovering?: "hover" | "noHover";
               movement?: "idle";
             };
+        pan?: "notPanning" | "panning";
       };
   tags: never;
 }
