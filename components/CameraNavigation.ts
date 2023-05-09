@@ -40,6 +40,14 @@ export function panCamera(camera: Camera, dx: number, dy: number): Camera {
   };
 }
 
+export function panCameraToValue(camera: Camera, x: number, y: number): Camera {
+  return {
+    x,
+    y,
+    z: camera.z,
+  };
+}
+
 export function zoomCamera(camera: Camera, point: Point, dz: number): Camera {
   const zoom = camera.z - dz * camera.z;
   const p1 = screenToCanvas(point, camera);

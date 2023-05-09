@@ -1,9 +1,8 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import {
-  canvasToScreen,
   getViewport,
   panCamera,
-  screenToCanvas,
+  panCameraToValue,
   zoomCamera,
   zoomIn,
   zoomOut,
@@ -17,13 +16,7 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 
-const subtract = (point1: Point, point2: Point): Point => {
-  return { x: point1.x - point2.x, y: point1.y - point2.y };
-};
-
-const addition = (point1: Point, point2: Point): Point => {
-  return { x: point1.x + point2.x, y: point1.y + point2.y };
-};
+const SIZE_MULTIPLIER = 10;
 
 export default function EditCanvas({ planter }: { planter: PlanterState }) {
   const context: Context = {
@@ -50,48 +43,6 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
   useEffect(() => {
     console.log("dragging", rDragging);
   }, [rDragging]);
-
-  // function onPointerDown(e: React.PointerEvent<SVGElement>) {
-  //   console.log("down");
-  //   e.currentTarget.setPointerCapture(e.pointerId);
-
-  //   const id = e.currentTarget.id;
-  //   if (!id) return;
-  //   send("addId", { count: id });
-  //   const point = { x: e.clientX, y: e.clientY };
-
-  //   rDragging.current = {
-  //     shape: { ...shapes[id] },
-  //     origin: point,
-  //   };
-  // }
-
-  // function onPointerMove(e: React.PointerEvent<SVGElement>) {
-  //   const dragging = rDragging.current;
-  //   if (!dragging) return;
-  //   console.log("move");
-  //   const shape = shapes[dragging.shape.id];
-  //   if (!shape) return;
-  //   const screenPoint = { x: e.clientX, y: e.clientY };
-  //   const delta = subtract(screenPoint, dragging.origin);
-  //   const newPoint = addition(shape, delta);
-  //   const point = screenToCanvas(newPoint, camera);
-
-  //   setShapes({
-  //     ...shapes,
-  //     [shape.id]: {
-  //       ...shape,
-  //       x: point.x,
-  //       y: point.y,
-  //     },
-  //   });
-  // }
-
-  // const onPointerUp = (e: React.PointerEvent<SVGElement>) => {
-  //   console.log("up");
-  //   e.currentTarget.releasePointerCapture(e.pointerId);
-  //   rDragging.current = null;
-  // };
 
   useEffect(() => {
     // Handles zooming and panning
@@ -131,7 +82,12 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
   const isPanning = state.matches("pan");
   const isSelecting = state.matches("cursor");
   const isAdding = state.matches("add");
-  const cursorLoc = canvasToScreen(state.context.cursor, camera);
+
+  const cursorLoc = {
+    x: state.context.cursor.x - camera.x,
+    y: state.context.cursor.y - camera.y,
+  };
+  // const cursorLoc = canvasToScreen(state.context.cursor, camera);
 
   const handlePointerDown = (e: React.PointerEvent<SVGElement>) => {
     if (isPanning) {
@@ -155,6 +111,21 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
     return send("END_PAN");
   };
 
+  const centerInViewport = () => {
+    const centerPoint = {
+      x: viewport.height / 2 - (planter.width * SIZE_MULTIPLIER) / 2,
+      y: viewport.width / 2 - (planter.height * SIZE_MULTIPLIER) / 2,
+    };
+
+    const currentZoomX = viewport.width / (planter.width * SIZE_MULTIPLIER);
+    const currentZoomY = viewport.height / (planter.height * SIZE_MULTIPLIER);
+    const minCurrentZoom = Math.min(currentZoomX, currentZoomY);
+    const requiredZoom = (minCurrentZoom / 1.2) * camera.z;
+
+    setCamera(panCameraToValue(camera, centerPoint.x, centerPoint.y));
+    setCamera((camera: Camera) => zoomTo(camera, requiredZoom));
+  };
+
   return (
     <div>
       <svg
@@ -175,8 +146,8 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
           <rect
             x={0}
             y={0}
-            width={planter.width * 10}
-            height={planter.height * 10}
+            width={planter.width * SIZE_MULTIPLIER}
+            height={planter.height * SIZE_MULTIPLIER}
             fill="white"
             stroke="black"
             strokeWidth={4}
@@ -192,8 +163,8 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
                 id={shape.id}
                 x={shape.x}
                 y={shape.y}
-                width={shape.size}
-                height={shape.size}
+                width={shape.size * SIZE_MULTIPLIER}
+                height={shape.size * SIZE_MULTIPLIER}
                 fill={shape.color}
                 stroke={isHovered || isSelected ? "blue" : "black"}
                 strokeWidth={4}
@@ -226,7 +197,11 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
       {/* Bottom actiom menu */}
       <div className="fixed bottom-0 left-0 flex justify-between w-full m-1">
         {/* Zoom section */}
-        <ZoomActions camera={camera} setCamera={setCamera} />
+        <ZoomActions
+          camera={camera}
+          setCamera={setCamera}
+          handleFitPlanter={centerInViewport}
+        />
 
         {/* Mode section */}
         <div className="flex gap-1 bg-base-200 rounded-2xl ">
@@ -268,8 +243,11 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
           context:
           {JSON.stringify(state.context)}
         </div>
-        <div>Viewport x: {Math.floor(viewport.minX)}</div>
-        <div>Viewport y: {Math.floor(viewport.minY)}</div>
+        {/* <div>Viewport x: {Math.floor(viewport.minX)}</div>
+        <div>Viewport y: {Math.floor(viewport.minY)}</div> */}
+        <div>Camera x: {Math.floor(camera.x)}</div>
+        <div>Camera y: {Math.floor(camera.y)}</div>
+        <div>Camera Z: {Math.floor(camera.z)}</div>
         <div>width: {Math.floor(viewport.width)}</div>
         <div>height: {Math.floor(viewport.height)}</div>
       </div>
@@ -280,9 +258,11 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
 const ZoomActions = ({
   camera,
   setCamera,
+  handleFitPlanter,
 }: {
   camera: Camera;
   setCamera: Dispatch<SetStateAction<Camera>>;
+  handleFitPlanter: () => void;
 }) => {
   return (
     <div className="flex gap-1 items-center">
@@ -322,6 +302,9 @@ const ZoomActions = ({
             onClick={() => setCamera(zoomTo(camera, 1))}
           >
             <p>100%</p>
+          </button>
+          <button className="btn btn-ghost" onClick={handleFitPlanter}>
+            <p>Fit</p>
           </button>
         </ul>
       </div>
