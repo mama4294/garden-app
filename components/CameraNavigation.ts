@@ -32,6 +32,68 @@ export function getViewport(camera: Camera, viewport: Viewport): Viewport {
   };
 }
 
+export function getInitialViewport(viewport: Viewport): Viewport {
+  const topLeft = { x: viewport.minX, y: viewport.minY };
+  const bottomRight = { x: viewport.maxX, y: viewport.maxY };
+
+  return {
+    minX: topLeft.x,
+    minY: topLeft.y,
+    maxX: bottomRight.x,
+    maxY: bottomRight.y,
+    height: bottomRight.x - topLeft.x,
+    width: bottomRight.y - topLeft.y,
+  };
+}
+
+export const centerInViewport = (
+  centerPoint: Point,
+  planterWidth: number,
+  planterHeight: number,
+  viewport: Viewport,
+  camera: Camera
+): Camera => {
+  const currentZoomX = viewport.width / planterWidth;
+  const currentZoomY = viewport.height / planterHeight;
+  const minCurrentZoom = Math.min(currentZoomX, currentZoomY);
+  const requiredZoom = (minCurrentZoom / 1.4) * camera.z;
+  return zoomTo(
+    { x: centerPoint.x, y: centerPoint.y, z: camera.z },
+    requiredZoom
+  );
+};
+
+export const getInitialFittedCamera = (
+  viewport: Viewport,
+  planterWidth: number,
+  planterHeight: number
+): Camera => {
+  const topLeft = { x: viewport.minX, y: viewport.minY };
+  const bottomRight = { x: viewport.maxX, y: viewport.maxY };
+
+  const currentViewport = {
+    minX: topLeft.x,
+    minY: topLeft.y,
+    maxX: bottomRight.x,
+    maxY: bottomRight.y,
+    height: bottomRight.x - topLeft.x,
+    width: bottomRight.y - topLeft.y,
+  };
+
+  const centerPoint = {
+    x: currentViewport.height / 2 - planterWidth / 2,
+    y: currentViewport.width / 2 - planterHeight / 2,
+  };
+
+  return centerInViewport(
+    centerPoint,
+    planterWidth,
+    planterHeight,
+    currentViewport,
+    { x: 0, y: 0, z: 1 }
+  );
+};
+
 export function panCamera(camera: Camera, dx: number, dy: number): Camera {
   return {
     x: camera.x - dx / camera.z,

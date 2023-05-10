@@ -1,8 +1,9 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import {
+  getInitialFittedCamera,
   getViewport,
   panCamera,
-  panCameraToValue,
+  centerInViewport,
   zoomCamera,
   zoomIn,
   zoomOut,
@@ -29,16 +30,43 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
   const ref = useRef<SVGSVGElement>(null);
   const [state, send] = useMachine(stateMachine, { context: context });
 
-  const [camera, setCamera] = useState<Camera>({
-    x: 0,
-    y: 0,
-    z: 1,
-  });
+  const initialViewport = {
+    minX: 0,
+    minY: 0,
+    maxX: window.innerWidth,
+    maxY: window.innerHeight,
+    width: window.innerWidth,
+    height: window.innerHeight,
+  };
+
+  const initialCamera = getInitialFittedCamera(
+    initialViewport,
+    planter.width * SIZE_MULTIPLIER,
+    planter.height * SIZE_MULTIPLIER
+  );
+
+  //Camera is the top left point of the viewport. It is panned and zoomed to see different areas of the canvas.
+  const [camera, setCamera] = useState<Camera>(initialCamera);
 
   const rDragging = useRef<{
     shape: Shape;
     origin: Point;
   } | null>(null);
+
+  const fitCamera = () => {
+    setCamera(
+      centerInViewport(
+        {
+          x: viewport.height / 2 - (planter.width * SIZE_MULTIPLIER) / 2,
+          y: viewport.width / 2 - (planter.height * SIZE_MULTIPLIER) / 2,
+        },
+        planter.width * SIZE_MULTIPLIER,
+        planter.height * SIZE_MULTIPLIER,
+        viewport,
+        camera
+      )
+    );
+  };
 
   useEffect(() => {
     console.log("dragging", rDragging);
@@ -70,15 +98,6 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
 
   const transform = `scale(${camera.z}) translate(${camera.x}px, ${camera.y}px)`;
 
-  const viewport = getViewport(camera, {
-    minX: 0,
-    minY: 0,
-    maxX: window.innerWidth,
-    maxY: window.innerHeight,
-    width: window.innerWidth,
-    height: window.innerHeight,
-  });
-
   const isPanning = state.matches("pan");
   const isSelecting = state.matches("cursor");
   const isAdding = state.matches("add");
@@ -87,7 +106,16 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
     x: state.context.cursor.x - camera.x,
     y: state.context.cursor.y - camera.y,
   };
-  // const cursorLoc = canvasToScreen(state.context.cursor, camera);
+
+  //Viewport is the device screen size. Does not change unless the screen does.
+  const viewport = getViewport(camera, {
+    minX: 0,
+    minY: 0,
+    maxX: window.innerWidth,
+    maxY: window.innerHeight,
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
 
   const handlePointerDown = (e: React.PointerEvent<SVGElement>) => {
     if (isPanning) {
@@ -109,21 +137,6 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
 
   const handlePointerUp = (e: React.PointerEvent<SVGElement>) => {
     return send("END_PAN");
-  };
-
-  const centerInViewport = () => {
-    const centerPoint = {
-      x: viewport.height / 2 - (planter.width * SIZE_MULTIPLIER) / 2,
-      y: viewport.width / 2 - (planter.height * SIZE_MULTIPLIER) / 2,
-    };
-
-    const currentZoomX = viewport.width / (planter.width * SIZE_MULTIPLIER);
-    const currentZoomY = viewport.height / (planter.height * SIZE_MULTIPLIER);
-    const minCurrentZoom = Math.min(currentZoomX, currentZoomY);
-    const requiredZoom = (minCurrentZoom / 1.2) * camera.z;
-
-    setCamera(panCameraToValue(camera, centerPoint.x, centerPoint.y));
-    setCamera((camera: Camera) => zoomTo(camera, requiredZoom));
   };
 
   return (
@@ -200,7 +213,7 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
         <ZoomActions
           camera={camera}
           setCamera={setCamera}
-          handleFitPlanter={centerInViewport}
+          handleFitPlanter={fitCamera}
         />
 
         {/* Mode section */}
@@ -247,7 +260,7 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
         <div>Viewport y: {Math.floor(viewport.minY)}</div> */}
         <div>Camera x: {Math.floor(camera.x)}</div>
         <div>Camera y: {Math.floor(camera.y)}</div>
-        <div>Camera Z: {Math.floor(camera.z)}</div>
+        <div>Camera Z: {camera.z}</div>
         <div>width: {Math.floor(viewport.width)}</div>
         <div>height: {Math.floor(viewport.height)}</div>
       </div>
