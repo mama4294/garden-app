@@ -237,9 +237,9 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
             Add
           </button>
           <button
-            disabled
+            disabled={!state.can("DELETE_SELECTION")}
             className={`btn btn-ghost`}
-            onClick={() => send("SELECT_ADD")}
+            onClick={() => send("DELETE_SELECTION")}
           >
             <TrashIcon className="h-6 w-6" />
           </button>
@@ -248,6 +248,11 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
       </div>
 
       <div className="fixed top-50 left-0">
+        <div>Camera x: {Math.floor(camera.x)}</div>
+        <div>Camera y: {Math.floor(camera.y)}</div>
+        <div>Camera Z: {camera.z}</div>
+        <div>width: {Math.floor(viewport.width)}</div>
+        <div>height: {Math.floor(viewport.height)}</div>
         <div>
           state:
           {JSON.stringify(state.value)}
@@ -256,13 +261,6 @@ export default function EditCanvas({ planter }: { planter: PlanterState }) {
           context:
           {JSON.stringify(state.context)}
         </div>
-        {/* <div>Viewport x: {Math.floor(viewport.minX)}</div>
-        <div>Viewport y: {Math.floor(viewport.minY)}</div> */}
-        <div>Camera x: {Math.floor(camera.x)}</div>
-        <div>Camera y: {Math.floor(camera.y)}</div>
-        <div>Camera Z: {camera.z}</div>
-        <div>width: {Math.floor(viewport.width)}</div>
-        <div>height: {Math.floor(viewport.height)}</div>
       </div>
     </div>
   );

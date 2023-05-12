@@ -15,6 +15,7 @@ export interface Typegen0 {
   eventsCausingActions: {
     addIdToSelection: "SELECT_SHAPE";
     clearHoveredId: "UNHOVER";
+    delete: "DELETE_SELECTION";
     setCursorLoc: "MOVE_CURSOR";
     setHoveredId: "HOVER";
   };

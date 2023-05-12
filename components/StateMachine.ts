@@ -27,7 +27,7 @@ export type Context = {
 
 export const stateMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5SQJYBcD2AnAdAYwFctZsBiAZQFEAZSgYQBUB9ABQEEA5AbQAYBdRKAAOGWOhQYAdoJAAPRABYAnAEYcKgBwB2AKw8VAJgDMWnrqUAaEAE9EJozgM8jhlSZUA2HtoUBfX1aomLiExGRUtIxMbAAiMbwCSCAiYmgS0knyCMpqmrr6xqbmVrYITgaOevpGPh5KCgYG-oEQ6Nj4RCS4ALYYAG5g3WCSaDgoEAA2YKQAsgDyAGqUTHQAqgBK5HPrCTIp4lIyWQC0ujo4Sjxml+5ad1oldjrnBho6ugYqPDoKCkYKHma4FawQ6YVwAAt+mAsChJFAcJIMAAJaFYUjIxaUHb8PaiA4ZUAnFSGCreAw6DQkr5ebyPBBGDxaHA1BQ6DweAxaHwqJRAoLtUJdHBQgaw+EitGkVYcTFLHGJYT4tKHTKIY4koznb46JQeEwaQ06Tz04weFl1L4aHgKHgGX4qfkgwWddrkMBTPBpCVI92elWSCg0ejMcjItgsSi7JL7ANHdUOlm2pSmM16n4eelGfTqT6eK4aTkKLQePwBYFtEKu3B+sBeuEI2AeusB0gxYMMZYREMASTm3FxMeV6XjCGOxh4OD+ChJSmeug0M50We8OELGjnml57w8hadlbBwtr9YlTf96SDkVD4cj0aVqRHarHM7UXJ4HP1jSchgU9JyOHfRp9C0G4tHtQFywFXAhAAQ0DbsojWTZtjvZJh1VIlEGec0eDnCk3j0DQuSMekdCcHA6m5QwS3uEl91BWD4ODKJYniQd7wJUdOXpe4cFMFwVHySldz5SDnWguDEQwNAWDgyQGwoBg2HWZh2AHRU0IfDC5DsOoFD4rRiy+XUtWLek3jUECnBTDQXD+bl6PaRicEY+T4TbdY2AAcVYThUNjR9MIZVQHBtddPnqMCDHM3UAO5bMQKUKl9QgloDxgiAIEvENfPUvEtMJHSEDI8zXkcZxNVLApVEc3AMqyhDmCQrYFXyzin3-PI9EMEwzF1cy1CqK5cLuX4ATLNLQXqsZJmmeYlhWDYWv89DCqyOd9O5JljV+XU2Q0ekvkEvi-lsylbOLGp-HLJEIDgGQoLauMnw1RMPCqRkXxAkx6XHc03Fw5wmWcIxXlqw9sCewKio1IwlAcd6rk+klvoeGxEA8NRGVUUkvE0T5UorUEhXaXoBiGEYoe0k5rQcS5rmcLRBPuQ69CnMxEa+AF300cGSZ6aEKdGcYpiptb1S0GoALtFxs0pAw9UzdGyhMC4OeLJR6n1JnCagiHITRBsxdHWG2Qoj7SxR+G0dKFQFA0NdLSuJd7DZPnq0lMUGyk1ExWNl7DBTc2kctwTrdNOpc0M+27b0NkdHd8FPZhb3RRhf2guOOdzRqO3DVMTWjDhrMORZdkFxTWdi0To9mxPKAM5h7qpx+e16mzQsOV-ZWVGNXMSQ5WcFZ1mu3Tr70EV9cfoYC6mEx0Bw2QaZQ-m8D9u9KYwHc5AfbVw0GqQmomXST48J5wM8Wxn1aTZnBxurcTwKVUZQ-zK9lPgMKq9DqUTJqcuCjcsifXNKNJm3x4Y-BthjOGOAyJ707roTGjoxIHmckiGSckjZDgKqOEwfcOSRWMHqIutkeJcgAvaK4SCi6CQ0ODZyrlsEcWekFfBk4aLUXtN1JKh13wOxtDjS6G4R6oKmplIBiBLigMLLoO2bJ6iUnMkyE6NQXALyUMYBo4NpoizAJIhAlcAKMkMi-BW2glalDnC8U6cNPAzkEddXwQA */
+    /** @xstate-layout N4IgpgJg5mDOIC5SQJYBcD2AnAdAYwFctZsBiAZQFEAZSgYQBUB9ABQEEA5AbQAYBdRKAAOGWOhQYAdoJAAPRABYAnAEYcKgBwB2AKw8VAJgDMWnrqUAaEAE9EJozgM8jhlSZUA2HtoUBfX1aomLiExGRUtIxMbAAiMbwCSCAiYmgS0knyCMpqmrr6xqbmVrYITgaOevpGPh5KCgYG-oEQ6Nj4RCS4ALYYAG5g3WCSaDgoEAA2YKQAsgDyAGqUTHQAqgBK5HPrCTIp4lIyWQC0ujo4Sjxml+5ad1oldjrnBho6ugYqPDoKCkYKHma4FawQ6YVwAAt+mAsChJFAcJIMAAJaFYUjIxaUHb8PaiA4ZUAnFSGCreAw6DQkr5ebyPBBGDxaHA1BQ6DweAxaHwqJRAoLtUJdHBQgaw+EitGkVYcTFLHGJYT4tKHTKIY4koznb46JQeEwaQ06Tz04weFl1L4aHgKHgGX4qfkgwWddrkMBTPBpCVI92elWSCg0ejMcjItgsSi7JL7ANHdUOlm2pSmM16n4eelGfTqT6eK4aTkKLQePwBYFtEKu3B+sBeuEI2AeusB0gxYMMZYREMASTm3FxMeV6XjCGOxh4OD+ChJSmeug0M50We8OELGjnml57w8hadlbBwtr9YlTf96SDkVD4cj0aVqRHarHM7UXJ4HP1jSchgU9JyOHfRp9C0G4tHtQFywFXAhAAQ0DbsojWTZtjvZJh1VIlEGec0eDnCk3j0DQuSMekdCcHA6m5QwS3uEl91BWD4ODKJYniQd7wJUdOXpe4cFMFwVHySldz5SDnWguDEQwNAWDgyQGwoBg2HWZh2AHRU0IfDC5DsOoFD4rRiy+XUtWLek3jUECnBTDQXD+bl6PaRicEY+T4VISgOBiVhOFQ2NH1AUoaQ0ACchUYsahTE0dIZPUKmURkN0MvReQ0RzcBgiAIEvEMfPUvEtMJGKyPM15HGcTVSwKVR0pwTLsoQ5gkK2BUCs4p9-zyFLCjMXVzLUKorlwu5fgBMsWgPeqxkmaZ5iWFYNhavz0KKrI5307kmWNX5dTZDR6S+QS+L+WzKVsiK0qBJEIDgGQoLauMnw1RMPCqRkXxAkx6XHc03GGmcai0TQCNqoVsAegKYo1IwlAcV6rneklPoeGxEA8NRGVUJQlELEl2SccaK1BMGemhIYRgh7STmtBxLmuZwgfuFGgr0KczEM8KAUaZQdFB6scF6AZydGcYpkp1b1S0GoALtFxs0pAw9UzVGyhMC4zFLED6n1IGIIm4n+dFGEG3F0dobZCi3tLJHYeZxBwpCwslG-HJbN5PnwUlMUGyk1ExVNp7DBTS2EetwTbdNOpc0MhQqTZG1ng94UjfFBEU4DzCxznc0agd7RcNhmGsw5Fl2QXKLeWLJO3WbE8oAzqGUqnH57XqbNCw5X8VZUY1cxJTkDVe8Dq5rWvvQRX0x8h-yqYTHQHDZBplD+bwPy70pjBCzl+9tXCjFecKR5wY9x5wM8W2nlazYBnAUrcTwKVUZQ-zK-HDCqvQ6lE-WnLghusneuaEaQNviwx+HbBA+olC303kYLU+pfivFqs5JEMk5ImyHIVUcJhe4cnqGBGG+oagkRVmBZkdpd66CIYJS6P8JKSBcug+E-87D5D4kyai9oUo4wOu+EKNpVDhSlklTwtV6osIQJcIBhZdCc12pScyTJjqMlep4BoitaFE3aFNUWYAJFRQAoyQyT8NElnpHOF4J0YZqK+Mofw-ggA */
     tsTypes: {} as import("./stateMachine.typegen").Typegen0,
 
     id: "editor",
@@ -95,7 +95,7 @@ export const stateMachine = createMachine(
                 on: {
                   DELETE_SELECTION: {
                     target: "noSelection",
-                    // actions: ["deleteSelection"],
+                    actions: ["delete"],
                   },
 
                   SELECT_SHAPE: {
@@ -189,8 +189,25 @@ export const stateMachine = createMachine(
         };
       }),
       addIdToSelection: assign((context, event) => {
+        //change this to toggle selection
         return {
           selection: [...context.selection, event.id],
+        };
+      }),
+
+      delete: assign((context) => {
+        //remove the context.shape objects which have an ID in the context.selection array
+        const updatedShapes = Object.keys(context.shapes)
+          .filter((key: string) => !context.selection.includes(key))
+          .reduce((obj: Shapes, key: string) => {
+            obj[key] = context.shapes[key];
+            return obj;
+          }, {});
+
+        console.log(updatedShapes);
+        return {
+          shapes: updatedShapes,
+          selection: [],
         };
       }),
     },
